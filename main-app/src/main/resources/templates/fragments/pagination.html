@@ -1,0 +1,45 @@
+<div th:fragment="pagination(movies, actionUrl)"
+     class="pagination"
+     th:if="${movies.totalPages > 1}">
+
+    <a th:if="${movies.hasPrevious()}"
+       th:href="@{${actionUrl}(
+            page=${movies.number - 1},
+            keyword=${param.keyword},
+            year=${param.year},
+            genre=${param.genre},
+            country=${param.country},
+            sort=${param.sort}
+       )}"
+       class="page-link">
+        &laquo;
+    </a>
+
+    <a th:each="pageNumber : ${#numbers.sequence(0, movies.totalPages - 1)}"
+       th:href="@{${actionUrl}(
+            page=${pageNumber},
+            keyword=${param.keyword},
+            year=${param.year},
+            genre=${param.genre},
+            country=${param.country},
+            sort=${param.sort}
+       )}"
+       th:text="${pageNumber + 1}"
+       th:classappend="${pageNumber == movies.number} ? 'active' : ''"
+       class="page-link">
+    </a>
+
+    <a th:if="${movies.hasNext()}"
+       th:href="@{${actionUrl}(
+            page=${movies.number + 1},
+            keyword=${param.keyword},
+            year=${param.year},
+            genre=${param.genre},
+            country=${param.country},
+            sort=${param.sort}
+       )}"
+       class="page-link">
+        &raquo;
+    </a>
+
+</div>

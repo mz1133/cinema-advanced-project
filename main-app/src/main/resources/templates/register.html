@@ -1,0 +1,102 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineCatalog | Register</title>
+    <link rel="stylesheet" href="/css/register.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+<header class="site-header public-header">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+        <nav class="top-nav auth-actions" aria-label="Register page navigation">
+            <a class="nav-link" th:href="@{/}">Back to Home</a>
+            <a class="nav-link" th:href="@{/login}">Login</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container section auth-page">
+    <section class="auth-card auth-card-register" aria-label="Registration form">
+        <h1>Create Account</h1>
+
+        <form class="auth-form" th:action="@{/register}" th:object="${registerRequest}" method="post" novalidate>
+
+            <div class="auth-group">
+                <label for="username">
+                    <span class="required">Username</span>
+                    <small style="color:var(--muted); margin-left: 10px;">Username (5–20 characters)</small>
+                </label>
+                <input id="username" type="text" th:field="*{username}" autocomplete="username" required />
+                <p class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                <p class="error" th:if="${errorsMessages != null && errorsMessages.containsKey('username')}" th:text="${errorsMessages.get('username')}"></p>
+
+            </div>
+
+            <div class="auth-group">
+                <label  for="email">
+                    <span class="required">Email</span>
+                    <small style="color:var(--muted); margin-left: 10px;">Enter valid email</small>
+                </label>
+                <input id="email" type="email" th:field="*{email}" autocomplete="email" required />
+                <p class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+                <p class="error" th:if="${errorsMessages != null && errorsMessages.containsKey('email')}" th:text="${errorsMessages.get('email')}"></p>
+
+
+            </div>
+
+            <div class="auth-group">
+                <label  for="password">
+                    <span class="required">Password</span>
+                    <small style="color:var(--muted); margin-left: 10px;">Password (7–25 characters)</small>
+                </label>
+                <input id="password" type="password" th:field="*{password}" autocomplete="new-password" required />
+                <p class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+                <p class="error" th:if="${errorsMessages != null && errorsMessages.containsKey('password')}" th:text="${errorsMessages.get('password')}"></p>
+
+            </div>
+
+            <div class="auth-group">
+                <label  for="confirmPassword">
+                    <span class="required">Confirm Password</span>
+                    <small style="color:var(--muted); margin-left: 10px;">Repeat your password</small>
+                </label>
+                <input id="confirmPassword" type="password" th:field="*{confirmPassword}" autocomplete="new-password" required />
+                <p class="error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></p>
+                <p class="error" th:if="${errorsMessages != null && errorsMessages.containsKey('password')}" th:text="${errorsMessages.get('password')}"></p>
+
+            </div>
+
+            <div class="auth-group">
+                <label  for="firstName">
+                    <span class="required">First Name</span>
+                    <small style="color:var(--muted); margin-left: 10px;">First name (3–20 characters)</small>
+                </label>
+                <input id="firstName" type="text" th:field="*{firstName}" autocomplete="given-name" required />
+                <p class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+            </div>
+
+            <div class="auth-group">
+                <label  for="lastName">
+                    <span class="required">Last Name</span>
+                    <small style="color:var(--muted); margin-left: 10px;">Last name (3–20 characters)</small>
+                </label>
+                <input id="lastName" type="text" th:field="*{lastName}" autocomplete="family-name" required />
+                <p class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+            </div>
+
+            <button class="btn btn-primary auth-submit" type="submit">Create Account</button>
+        </form>
+
+
+    </section>
+
+</main>
+<div th:replace="~{fragments/footer :: app-footer-minimal}"></div>
+
+</body>
+
+</html>

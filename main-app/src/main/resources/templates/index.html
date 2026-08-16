@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineCatalog | Home</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+<header class="site-header public-header">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+        <nav class="top-nav" aria-label="Main navigation">
+            <a class="nav-link" th:href="@{/register/form}">Register</a>
+            <a class="nav-link" th:href="@{/login}">Login</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container section" style="flex: 1;">
+    <div th:replace="~{fragments/movie-search-grid :: search-and-grid('/', ${movies})}"></div>
+</main>
+
+<div th:replace="~{fragments/footer :: app-footer-minimal}"></div>
+</body>
+
+</html>

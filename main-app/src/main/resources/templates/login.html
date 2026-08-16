@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineCatalog | Login</title>
+    <link rel="stylesheet" href="/css/login.css"/>
+    <link rel="stylesheet" href="/css/styles.css"/>
+</head>
+<body>
+<header class="site-header public-header">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+        <nav class="top-nav auth-actions" aria-label="Login page navigation">
+            <a class="nav-link" th:href="@{/}">Back to Home</a>
+            <a class="nav-link" th:href="@{/register/form}">Register</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container section auth-page">
+    <section class="auth-card" aria-label="Login form">
+        <h1>Login</h1>
+        <p class="muted auth-subtitle">Access your account to continue browsing and saving movies.</p>
+
+
+        <form class="auth-form" th:action="@{/login}" th:method="post" th:object="${loginRequest}" novalidate>
+            <div class="auth-group">
+                <p class="error"
+                   th:if="${#fields.hasAnyErrors()}"
+                   th:text="${#fields.errors('*')[0]}">
+                </p>
+
+                <p class="error" th:if="${error}" th:text="${error}"></p>
+                <label for="username">Username or Email</label>
+                <input th:field="*{usernameOrEmail}" id="username" name="username" type="text" autocomplete="username"
+                       required/>
+            </div>
+
+            <div class="auth-group">
+                <label for="password">Password</label>
+                <input th:field="*{password}" id="password" name="password" type="password"
+                       autocomplete="current-password" required/>
+            </div>
+
+            <button class="btn btn-primary auth-submit" type="submit">Login</button>
+        </form>
+
+        <p class="auth-helper">
+            Don’t have an account?
+            <a th:href="@{/register}">Create one</a>
+        </p>
+    </section>
+</main>
+</body>
+</html>

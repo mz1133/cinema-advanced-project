@@ -1,0 +1,134 @@
+.subscription-hero {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.subscription-hero h1 {
+    font-family: Antonio, Inter, sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+}
+
+.subscription-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.subscription-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.subscription-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(58, 213, 255, 0.3);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 15px rgba(229, 9, 20, 0.15);
+}
+
+.card-title {
+    font-family: Antonio, Inter, sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+.card-duration {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-price {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #3ad5ff;
+    margin-bottom: 2rem;
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(58, 213, 255, 0.3);
+}
+
+.card-price span {
+    font-size: 1rem;
+    color: var(--muted);
+    display: block;
+    margin-top: 0.3rem;
+}
+
+.subscription-card .btn {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1.1rem;
+    margin-top: auto;
+}
+
+
+.subscription-card.premium {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(229, 9, 20, 0.25);
+    background: linear-gradient(180deg, rgba(229, 9, 20, 0.03) 0%, var(--surface) 100%);
+}
+
+.subscription-card.premium .card-price {
+    color: var(--primary);
+    text-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+}
+
+@media (max-width: 760px) {
+    .subscription-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+footer {
+    padding: 20px;
+    background: #000;
+}
+
+.subscription-grid {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    justify-items: center;
+}
+
+.subscription-card {
+    width: 100%;
+    max-width: 400px;
+
+}
+.success-message {
+    color: green;
+    font-weight: bold;
+    ont-size: 1.25rem;
+}
+.error-message {
+    color: red;
+    font-weight: bold;
+    ont-size: 1.35rem;
+}

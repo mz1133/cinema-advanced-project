@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineSpectrum | Home</title>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/home.css"/>
+
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;">
+
+<header class="site-header user-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+
+        <div class="user-profile-widget">
+            <img th:src="${currentUser.pictureUrl} " alt="Profile Picture" class="user-avatar"/>
+            <div class="user-meta-info">
+                <span th:text="${currentUser.username}" class="username">AlexDeveloper</span>
+            </div>
+            <form th:action="@{/logout}" th:method="post" class="m-0">
+                <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard-wrapper" style="margin-top: 80px;">
+
+    <div th:replace="~{fragments/sidebar :: user-sidebar}"></div>
+
+    <main class="main-content section" style="flex: 1;">
+        <div th:replace="~{fragments/movie-search-grid :: search-and-grid('/home', ${movies})}"></div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/footer :: app-footer-minimal}"></div>
+
+</body>
+</html>

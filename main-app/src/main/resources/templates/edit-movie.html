@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineSpectrum | Edit Movie</title>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/home.css"/>
+    <style>
+        .row-btn {
+            background-color: darkred;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .genre-input-wrap,
+        .actor-row,
+        .country-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-message-1 { color: green; font-weight: bold; font-size: 1.55rem; }
+        .error-1 { color: #dc3545; font-size: 14px; font-weight: 500; margin: 0; }
+        .required::after { content: " *"; color: #dc3545; font-weight: bold; margin-left: 4px; }
+
+         {
+            background-color: #1a2235 !important;
+            color: #8b95a5 !important;
+            cursor: not-allowed;
+            border-color: #2a344a !important;
+        }
+    </style>
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;">
+
+<header class="site-header user-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+
+        <div class="user-profile-widget">
+            <img th:src="${currentUser.pictureUrl}" alt="Profile Picture" class="user-avatar"/>
+            <div class="user-meta-info">
+                <span th:text="${currentUser.username}" class="username">AlexDeveloper</span>
+            </div>
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard-wrapper" style="margin-top: 80px; display: flex; flex: 1;">
+    <div th:replace="~{fragments/sidebar :: user-sidebar}"></div>
+
+    <main class="main-content section" style="flex: 1; display: flex; justify-content: center; align-items: flex-start;">
+        <div class="filters" style="width: 100%; max-width: 700px; margin-top: 2rem; padding: 2rem;">
+            <div class="section-head">
+                <h2 style="text-align: center; margin-bottom: 1.5rem;">Edit Movie</h2>
+                <p class="success-message-1" th:if="${successMessage}" th:text="${successMessage}"></p>
+            </div>
+
+            <form th:action="@{/movies/{id}/edit(id=${movieId})}" th:method="post" th:object="${movieDto}"
+                  onsubmit="return confirm('Are you sure you want to save these changes?');" novalidate>
+                <input type="hidden" name="source" th:value="${source}">
+
+                <div style="display: grid; gap: 1rem; grid-template-columns: 1fr 1fr;">
+
+                    <div class="field">
+                        <label>
+                            <span class="required">Title</span>
+                            <p class="error-1" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+                        </label>
+                        <input th:field="*{title}" type="text"   required/>
+                    </div>
+
+
+
+                    <div class="field">
+                        <label>
+                            <span class="required">Genre</span>
+                            <p class="error-1" th:if="${#fields.hasErrors('genres')}" th:errors="*{genres}"></p>
+                        </label>
+
+                        <div id="genreRows">
+                            <div class="genre-input-wrap" th:each="genreItem, stat : *{genres}">
+                                <select class="genre-select" th:field="*{genres[__${stat.index}__]}" required>
+                                    <option value="" disabled selected>Select genre</option>
+                                    <option th:each="genre : ${movieOptions.getGenres()}"
+                                            th:value="${genre}"
+                                            th:text="${genre.displayName}">
+                                    </option>
+                                </select>
+                                <button type="button" th:if="${stat.index == 0}" onclick="addGenreRow()" class="row-btn">+</button>
+                                <button type="button" th:if="${stat.index > 0}" onclick="removeRow(this)" class="row-btn">-</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>
+                            <span class="required">Year</span>
+                            <p class="error-1" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></p>
+                        </label>
+                        <input th:field="*{year}" type="number"  required/>
+                    </div>
+
+                    <div class="field">
+                        <label>Director</label>
+                        <input th:field="*{director}" type="text" required placeholder="Director name..."/>
+                    </div>
+
+                    <div class="field">
+                        <label><span class="required">Duration</span></label>
+                        <span class="error-1" th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}"></span>
+                        <input th:field="*{duration}" type="number" required placeholder="112..."/>
+                    </div>
+
+                    <div class="field">
+                        <label>Rating</label>
+                        <input th:field="*{rating}" type="number" step="0.1" required placeholder="7.5..."/>
+                    </div>
+
+                    <div class="field" style="grid-column: span 2;">
+                        <label>Poster URL</label>
+                        <input th:field="*{posterUrl}" type="url" required placeholder="https://image-url.com..."/>
+                    </div>
+
+                    <div class="field" style="grid-column: span 2;">
+                        <label class="required">Studio</label>
+                        <p class="error-1" th:if="${#fields.hasErrors('studio')}" th:errors="*{studio}"></p>
+                        <input th:field="*{studio}" type="text" required placeholder="studio..."/>
+                    </div>
+
+                    <div class="field" style="grid-column: span 2;">
+                        <label class="required">Countries</label>
+                        <p class="error-1" th:if="${#fields.hasErrors('countries')}" th:errors="*{countries}"></p>
+                        <div id="countriesRows" class="countries-rows">
+                            <div class="country-row" th:each="countryItem, stat : *{countries}">
+                                <select class="country-select" th:field="*{countries[__${stat.index}__]}" required>
+                                    <option value="" disabled>Select country</option>
+                                    <option th:each="country : ${movieOptions.getCountries()}"
+                                            th:value="${country}"
+                                            th:text="${country.getDisplayName()}">
+                                    </option>
+                                </select>
+                                <button type="button" th:if="${stat.index == 0}" onclick="addCountryRow()" class="row-btn">+</button>
+                                <button type="button" th:if="${stat.index > 0}" onclick="removeRow(this)" class="row-btn">-</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field" style="grid-column: span 2;">
+                        <label class="required">Actors</label>
+                        <p class="error-1" th:if="${#fields.hasErrors('actorsIds')}" th:errors="*{actorsIds}"></p>
+                        <div id="actorsRows" class="actors-rows">
+                            <div class="actor-row" th:each="actorItem, stat : *{actorsIds}">
+                                <select class="actor-select" th:field="*{actorsIds[__${stat.index}__]}" required>
+                                    <option value="" disabled>Select actor</option>
+                                    <option th:each="actor : ${movieOptions.getActorsFullNameAndId()}"
+                                            th:value="${actor.id}"
+                                            th:text="${actor.fullName}">
+                                    </option>
+                                </select>
+                                <button type="button" th:if="${stat.index == 0}" onclick="addActorRow()" class="row-btn">+</button>
+                                <button type="button" th:if="${stat.index > 0}" onclick="removeRow(this)" class="row-btn">-</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field" style="grid-column: span 2;">
+                        <label>Description</label>
+                        <textarea th:field="*{description}" rows="5" style="width: 100%; background: #0d1322; border: 1px solid #4a5677; border-radius: 10px; color: #fff; padding: .65rem;"></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 10px;">
+                    <a th:href="@{/admin/movies}" class="btn btn-secondary" style="padding: .75rem 2rem;">Cancel</a>
+                    <button type="submit" class="btn btn-primary" style="padding: .75rem 2rem; background-color: #28a745; border-color: #28a745;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/footer :: app-footer-minimal}"></div>
+
+<script>
+    function addGenreRow() {
+        const genreRowsContainer = document.getElementById("genreRows");
+        const genreRows = genreRowsContainer.querySelectorAll('.genre-input-wrap');
+        if (genreRows.length >= 3) return;
+
+        const newRow = genreRows[0].cloneNode(true);
+        const newIndex = genreRows.length;
+        const select = newRow.querySelector('.genre-select');
+        select.name = `genres[${newIndex}]`;
+        select.id = `genres${newIndex}`;
+        select.value = "";
+
+        const button = newRow.querySelector('button');
+        button.textContent = "-";
+        button.setAttribute("onclick", "removeRow(this)");
+
+        genreRowsContainer.appendChild(newRow);
+        updateGenreOptions();
+    }
+
+    function addCountryRow() {
+        const container = document.getElementById("countriesRows");
+        const rows = container.querySelectorAll('.country-row');
+        if (rows.length >= 3) return;
+
+        const newRow = rows[0].cloneNode(true);
+        const newIndex = rows.length;
+        const select = newRow.querySelector('.country-select');
+        select.name = `countries[${newIndex}]`;
+        select.id = `countries${newIndex}`;
+        select.value = "";
+
+        const button = newRow.querySelector('.row-btn');
+        button.textContent = "-";
+        button.setAttribute("onclick", "removeRow(this)");
+
+        container.appendChild(newRow);
+        updateCountryOptions();
+    }
+
+    function addActorRow() {
+        const container = document.getElementById("actorsRows");
+        const rows = container.querySelectorAll('.actor-row');
+        if (rows.length >= 12) return;
+
+        const newRow = rows[0].cloneNode(true);
+        const select = newRow.querySelector('.actor-select');
+        const newIndex = rows.length;
+
+        select.name = `actorsIds[${newIndex}]`;
+        select.id = `actorsIds${newIndex}`;
+        select.selectedIndex = 0;
+
+        const button = newRow.querySelector('.row-btn');
+        button.textContent = "-";
+        button.setAttribute("onclick", "removeRow(this)");
+
+        container.appendChild(newRow);
+        updateActorOptions();
+    }
+
+    function removeRow(button) {
+        button.parentElement.remove();
+        updateActorOptions();
+        updateGenreOptions();
+        updateCountryOptions();
+    }
+
+    function updateActorOptions() {
+        const selects = document.querySelectorAll('.actor-select');
+        const selectedActors = Array.from(selects).map(select => select.value).filter(value => value !== "");
+
+        selects.forEach(select => {
+            const currentValue = select.value;
+            Array.from(select.options).forEach(option => {
+                if (option.value === "") return;
+
+                const isSelectedElsewhere = selectedActors.includes(option.value) && option.value !== currentValue;
+                option.hidden = isSelectedElsewhere;
+                option.disabled = isSelectedElsewhere;
+            });
+        });
+    }
+
+    function updateGenreOptions() {
+        const selects = document.querySelectorAll('.genre-select');
+        const selectedGenres = Array.from(selects).map(select => select.value).filter(value => value !== "");
+
+        selects.forEach(select => {
+            const currentValue = select.value;
+            Array.from(select.options).forEach(option => {
+                if (option.value === "") return;
+
+                const isSelectedElsewhere = selectedGenres.includes(option.value) && option.value !== currentValue;
+                option.hidden = isSelectedElsewhere;
+                option.disabled = isSelectedElsewhere;
+            });
+        });
+    }
+
+    function updateCountryOptions() {
+        const selects = document.querySelectorAll('.country-select');
+        const selectedCountries = Array.from(selects).map(select => select.value).filter(value => value !== "");
+
+        selects.forEach(select => {
+            const currentValue = select.value;
+            Array.from(select.options).forEach(option => {
+                if (option.value === "") return;
+
+                const isSelectedElsewhere = selectedCountries.includes(option.value) && option.value !== currentValue;
+                option.hidden = isSelectedElsewhere;
+                option.disabled = isSelectedElsewhere;
+            });
+        });
+    }
+
+    document.addEventListener("change", function(event) {
+        if (event.target.classList.contains("actor-select")) updateActorOptions();
+        if (event.target.classList.contains("genre-select")) updateGenreOptions();
+        if (event.target.classList.contains("country-select")) updateCountryOptions();
+    });
+
+    window.onload = function() {
+        updateActorOptions();
+        updateGenreOptions();
+        updateCountryOptions();
+    };
+</script>
+
+</body>
+</html>

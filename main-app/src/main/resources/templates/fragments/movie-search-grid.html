@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="search-and-grid(actionUrl, movies)">
+    <section class="filters" aria-label="Search and filtering">
+        <form class="search-form-grid" th:action="@{|${actionUrl}}" th:method="get">
+            <div class="field field-search">
+                <label for="keyword">Search</label>
+                <input id="keyword" name="keyword" type="search" placeholder="Title..." />
+            </div>
+            <div class="field">
+                <label for="year">Year</label>
+                <select id="year" name="year">
+                    <option value="">ALL</option>
+                    <option th:each=" y : ${releaseYears}"
+                            th:value="${y.value}"
+                            th:text="${y.value}"
+                            th:selected="${y.value == year}">
+
+                    </option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="genre">Genre</label>
+                <select id="genre" name="genre">
+                    <option value="">ALL</option>
+                    <option th:each="g : ${genres}"
+                            th:value="${g}"
+                            th:text="${g}"
+                            th:selected="${g.displayName == genre}">
+                    </option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="country">Country</label>
+                <select id="country" name="country">
+                    <option value="">ALL</option>
+                    <option th:each=" c : ${countries}"
+                            th:value="${c}"
+                            th:text="${c.displayName}"
+                            th:selected="${c.displayName == country}">
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="sort">Sort by</label>
+                <select id="sort" name="sort">
+                    <option value="">ALL</option>
+                    <option value="newest">Newest</option>
+                    <option value="rating_desc">Rating (High to Low)</option>
+                    <option value="year_desc">Year (New to Old)</option>
+                    <option value="title_asc">Title (A-Z)</option>
+                </select>
+            </div>
+            <div class="field field-actions">
+                <button class="btn btn-primary" type="submit">Apply Filters</button>
+
+                <a th:if="${session.userId != null}" class="btn btn-secondary" th:href="@{/home}">Reset</a>
+
+                <a th:unless="${session.userId != null}" class="btn btn-secondary" th:href="@{/}">Reset</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="section-head">
+        <h2>Available Titles</h2>
+    </section>
+
+    <section class="movie-grid">
+
+        <article class="movie-card"
+                 th:each="movie : ${movies.content}">
+
+            <a th:href="@{/movies/details/{id}(id=${movie.id})}">
+
+                <div class="poster">
+                <span th:text="${movie.title}">
+                    Movie title
+                </span>
+                </div>
+
+                <div class="movie-card-body">
+
+                    <h3 th:text="${movie.title}">
+                        Movie title
+                    </h3>
+
+                    <p class="movie-year"
+                       th:text="${movie.year}">
+                        2024
+                    </p>
+
+                    <div class="badge-row">
+
+                    <span class="badge"
+                          th:each="genre : ${movie.genre}"
+                          th:text="${genre.displayName}">
+                        Action
+                    </span>
+
+                        <span class="badge"
+                              th:each="country : ${movie.country}"
+                              th:text="${country.displayName}">
+                        USA
+                    </span>
+
+                        <span class="badge badge-rating">
+                        ★
+                        <span th:text="${#numbers.formatDecimal(movie.rating, 1, 1)}">
+                            8.1
+                        </span>
+                    </span>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </article>
+
+    </section>
+
+    </section>
+
+     <div th:replace="~{fragments/pagination :: pagination(${movies}, ${actionUrl})}"></div>
+
+    </div>
+</body>
+</html>

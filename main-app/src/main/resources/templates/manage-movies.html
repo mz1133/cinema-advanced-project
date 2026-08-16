@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineSpectrum | Manage Movies</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/home.css" />
+    <link rel="stylesheet" href="/css/subscriptions.css" />
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+
+<header class="site-header user-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+
+        <div class="user-profile-widget">
+            <img th:src="${currentUser.pictureUrl}"
+                 alt="Profile Picture" class="user-avatar" />
+
+            <div class="user-meta-info">
+                <span th:text="${currentUser.username}" class="username">AlexDeveloper</span>
+            </div>
+
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+            </form>
+        </div>
+
+    </div>
+</header>
+
+<div class="dashboard-wrapper" style="margin-top: 80px; display: flex; flex: 1;">
+    <div th:replace="~{fragments/sidebar :: user-sidebar}"></div>
+
+    <main class="main-content section" style="flex: 1; padding: 2rem;">
+        <div class="filters" style="padding: 1.5rem;">
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <a href="/admin/movies" class="btn btn-primary">Manage Movies</a>
+                <a href="/admin/users" class="btn btn-secondary">Manage Users</a>
+            </div>
+            <p th:if="${message}" th:text="${message}" class="error-message"></p>
+            <p th:if="${successMessage}" th:text="${successMessage}" class="success-message"></p>
+          <form th:action="@{/admin/movies}" th:method="get">
+            <div class="filters" style="margin-bottom: 1.5rem; padding: 1rem; display: flex; gap: 1rem; align-items: center;">
+
+                <div style="width: 180px;">
+                    <select name="searchType" style="padding: 0.65rem; width: 100%; background: #0d1322; border: 1px solid #4a5677; border-radius: 10px; color: #fff;">
+                        <option th:selected="${searchType == 'title'}" value="title">Search by Title</option>
+                        <option th:selected="${searchType== 'id'}" value="id">Search by ID</option>
+                    </select>
+                </div>
+
+                <div style="flex: 1;">
+                    <label>
+                        <input th:value="${keyword}" name="keyword" type="text" placeholder="Enter value..."
+                               style="padding: 0.65rem; width: 100%; background: #0d1322; border: 1px solid #4a5677; border-radius: 10px; color: #fff;" />
+                    </label>
+                </div>
+
+                <button class="btn btn-primary" style="padding: 0.65rem 1.5rem;">Search</button>
+            </div>
+
+          </form>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; color: var(--text);">
+                <thead>
+                <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                    <th style="padding: 1rem;">Movie ID</th>
+                    <th style="padding: 1rem;">Edit</th>
+                    <th style="padding: 1rem;">Title</th>
+                    <th style="padding: 1rem;">Genre</th>
+                    <th style="padding: 1rem;">Year</th>
+                    <th style="padding: 1rem;">Published By</th>
+                    <th style="padding: 1rem;">Deleted</th> <th style="padding: 1rem; text-align: center;">Actions</th> </tr>
+                </thead>
+                <tbody>
+                <tr th:each="movie : ${movies.content}" style="border-bottom: 1px solid var(--border);">
+                    <td th:text="${movie.id}" style="padding: 1rem; color: var(--muted);">#998</td>
+                    <td style="padding: 1rem;">
+                        <form th:action="@{/movies/{id}/edit(id=${movie.id}, source='admin')}" method="get" style="display: inline;">
+                            <button type="submit" class="btn btn-primary btn-sm" style="background-color: #007bff; border-color: #007bff;">
+                                Edit
+                            </button>
+                            <input type="hidden" name="source" value="admin">
+                        </form>
+                    </td>
+                    <td th:text="${movie.title}" style="padding: 1rem;">Inception</td>
+                    <td style="padding: 1rem;">
+                        <span th:each=" genre, iterStat : ${movie.genre}" >
+                         <span th:text="${genre}"></span>
+                         <span th:if="${!iterStat.last}">, </span>
+                          </span>
+                    </td>
+
+                    <td th:text="${movie.year}" style="padding: 1rem;">2010</td>
+                    <td th:text="${movie.postedBy}" style="padding: 1rem; color: var(--muted);">AlexDeveloper</td>
+
+                    <td th:text="${movie.deleted}"
+                        th:style="${movie.deleted == true} ? 'padding: 1rem; color: #b90512; font-weight: bold;' : 'padding: 1rem; color: #28a745; font-weight: bold;'">
+                    </td>
+
+                    <td style="padding: 1rem; text-align: center;">
+
+                        <form th:if="${movie.deleted == false or movie.deleted == 'false' or movie.deleted == null}"
+                              th:action="@{/admin/movies}"
+                              th:method="delete"
+                              style="display: inline;"
+                              onsubmit="return confirm('Are you sure you want to delete this movie?');">
+
+                            <input type="hidden" name="movieIdToDelete" th:value="${movie.id}" />
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-sm"
+                                    style="background: #b90512; border-color: #b90512;">
+                                Delete
+                            </button>
+                        </form>
+
+                        <form th:if="${movie.deleted == true or movie.deleted == 'true'}"
+                              th:action="@{/admin/movies}"
+                              th:method="patch"
+                              style="display: inline;"
+                              onsubmit="return confirm('Are you sure you want to restore this movie?');">
+
+                            <input type="hidden" name="movieIdToRestore" th:value="${movie.id}" />
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-sm"
+                                    style="background: #28a745; border-color: #28a745;">
+                                Restore
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination" th:if="${movies.totalPages > 1}">
+
+
+                <a th:if="${movies.hasPrevious()}"
+                   th:href="@{/movies(page=${movies.number - 1}, keyword=${keyword}, searchType=${searchType})}"
+                   class="page-link">
+                    &laquo;
+                </a>
+
+
+                <a  th:if="${movies.totalPages > 0}" th:each="pageNumber : ${#numbers.sequence(0, movies.totalPages - 1)}"
+                   th:href="@{/movies(page=${pageNumber}, keyword=${keyword}, searchType=${searchType})}"
+                   th:text="${pageNumber + 1}"
+                   th:classappend="${pageNumber == movies.number} ? 'active' : ''"
+                   class="page-link">
+                </a>
+
+
+                <a th:if="${movies.hasNext()}"
+                   th:href="@{/movies(page=${movies.number + 1}, keyword=${keyword}, searchType=${searchType})}"
+                   class="page-link">
+                    &raquo;
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+<footer th:replace="~{fragments/footer :: app-footer-minimal}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - CineCatalog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css" />
+
+    <style>
+        .about-hero {
+            text-align: center;
+            padding: 3rem 0 1.5rem;
+        }
+        .about-hero h1 {
+            font-family: Antonio, sans-serif;
+            font-size: 3.5rem;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+        }
+        .about-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2.5rem;
+        }
+        .feature-item {
+            background: var(--bg-2);
+            padding: 1.5rem;
+            border-radius: 14px;
+            border-left: 4px solid #ff3140;
+            transition: 0.3s;
+        }
+        .feature-item:nth-child(even) {
+            border-left-color: #3ad5ff;
+        }
+        .feature-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 49, 64, 0.1);
+        }
+        .feature-item h3 {
+            color: #fff;
+            margin-top: 0;
+            font-family: Antonio, sans-serif;
+            font-size: 1.3rem;
+        }
+        .about-text {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: var(--muted);
+            margin-bottom: 2.5rem;
+        }
+        .about-text p {
+            margin-bottom: 1.2rem;
+        }
+        .highlight {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .site-info-section {
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+            margin-top: 2rem;
+        }
+
+        .site-info-section h2 {
+            font-family: Antonio, sans-serif;
+            font-size: 2.2rem;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+
+
+<main class="container section" style="flex: 1 0 auto;">
+
+    <section class="about-hero">
+        <h1>What is <span style="color: #ff3140; text-shadow: 0 0 14px rgba(255, 49, 64, 0.6);">CINE</span><span style="color: #3ad5ff; text-shadow: 0 0 14px rgba(58, 213, 255, 0.65);">CATALOG</span>?</h1>
+        <p class="muted">Your ultimate cinematic database and community platform.</p>
+    </section>
+
+    <div class="about-card">
+        <div class="about-text">
+            <p>Welcome to <span class="highlight">CineCatalog</span>, the ultimate destination for movie lovers. Our platform is a meticulously curated cinematic database designed to bring the world of film directly to your screen.</p>
+
+            <p>Whether you are looking for timeless classics, trending box-office hits, or detailed information about your favorite actors and directors, CineCatalog provides a seamless, lightning-fast, and visually immersive experience built for true cinephiles.</p>
+        </div>
+
+        <div class="about-grid">
+            <div class="feature-item">
+                <h3>🎬 Huge Database</h3>
+                <p>Access thousands of movie titles, complete with high-quality posters, detailed cast information, release years, and genre breakdowns.</p>
+            </div>
+            <div class="feature-item">
+                <h3>⚡ Neon Speed</h3>
+                <p>Built upon a high-performance architecture, our search engine allows you to filter and find exactly the movie you want instantly without any lag.</p>
+            </div>
+            <div class="feature-item">
+                <h3>💎 Premium Experience</h3>
+                <p>Unlock exclusive content, advanced personal tracking, and personalized movie lists tailored to your taste by becoming a community subscriber.</p>
+            </div>
+            <div class="feature-item">
+                <h3>📱 Fully Responsive</h3>
+                <p>Designed mobile-first and fully optimized. CineCatalog looks and performs beautifully across all your devices—phone, tablet, or desktop.</p>
+            </div>
+        </div>
+
+        <div class="site-info-section">
+            <h2>Why Choose CineCatalog?</h2>
+            <p class="about-text">
+                Navigating through endless streaming platforms can be exhausting. CineCatalog cuts through the noise by providing a clean, distraction-free environment dedicated purely to movie appreciation. We constantly update our metadata repository to ensure you are always up-to-date with the newest releases and industry news.
+            </p>
+            <p class="about-text">
+                <strong>Our Vision:</strong> To grow into a vast community-driven hub where cinema enthusiasts can not only browse, but also discuss, rate, and share their passion for the seventh art. Enjoy your stay and discover your next favorite film!
+            </p>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/footer :: app-footer-copyright}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineSpectrum | My Profile</title>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/home.css"/>
+    <link rel="stylesheet" href="/css/my-profile.css"/>
+    <link rel="stylesheet" href="/css/register.css"/>
+</head>
+<style>
+    .success-message-2 {
+        color: #28a745;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+        text-align: center;
+    }
+</style>
+<body style="display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; margin: 0;">
+
+<header class="site-header user-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+
+        <div class="user-profile-widget">
+            <img th:src="${currentUser.pictureUrl}" alt="Profile Picture" class="user-avatar"/>
+            <div class="user-meta-info">
+                <span th:text="${currentUser.username}" class="username">AlexDeveloper</span>
+            </div>
+            <form th:action="@{/logout}" th:method="post" class="m-0">
+                <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard-wrapper" style="margin-top: 80px; display: flex; flex: 1;">
+
+    <div th:replace="~{fragments/sidebar :: user-sidebar}"></div>
+
+    <main class="mp-main-content">
+
+        <div class="mp-box">
+
+            <div class="mp-top-section">
+                <img th:src="${currentUser.pictureUrl}" alt="Avatar" class="mp-avatar"/>
+                <p class="info-item">
+                    <span class="info-label">System ID: </span>
+                    <span th:text="${currentUser.id}" class="user-id">#10452</span>
+                </p>
+                <p class="success-message-2" th:if="${successMessage}" th:text="${successMessage}"></p>
+                <div class="mp-static-info">
+                    <div class="info-item">
+                        <span class="info-label">Username:</span>
+                        <span th:text="${currentUser.username}" class="user-id">AlexDeveloper</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Role:</span>
+                        <span th:text="${currentUser.username}" class="user-id">USER</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Joined:</span>
+                        <span th:text="${#temporals.format(currentUser.createdOn, 'dd.MM.yyyy HH:mm')}">15 Jan 2026</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mp-bottom-section">
+                <form th:action="@{/home/my-profile/update}" th:method="post" th:object="${updateProfileRequest}">
+                    <div class="mp-form-grid">
+
+                        <div class="mp-form-group">
+                            <label for="firstName">First Name</label>
+                            <input th:field="*{firstName}" type="text" id="firstName" name="firstName"
+                                   class="editable-field" placeholder="Enter first name"/>
+                        </div>
+
+                        <div class="mp-form-group">
+                            <label for="lastName">Last Name</label>
+                            <input th:field="*{lastName}" type="text" id="lastName" name="lastName"
+                                   class="editable-field" placeholder="Enter last name"/>
+                        </div>
+
+                        <div class="mp-form-group">
+                            <label for="email">Email Address</label>
+                            <input th:field="*{email}" type="email" id="email" name="email" placeholder="Enter email"
+                                   readonly/>
+                        </div>
+
+                        <div class="mp-form-group">
+                            <label for="phoneNumber">Phone Number</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}"
+                                   class="editable-field" placeholder="Add a phone number"/>
+                            <p class="error" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">
+                        </div>
+
+
+                        <div class="mp-form-group">
+                            <label for="birthDate">Birth Date</label>
+                            <input type="date" id="birthDate" name="birthDate" th:field="*{birthDate}"
+                                   class="editable-field"/>
+                        </div>
+
+                        <div class="mp-form-group">
+                            <label for="email">Picture Url</label>
+                            <label for="picture"></label>
+                            <input th:field="*{pictureUrl}" type="text" id="picture" name="picture" class="editable-field" placeholder="picture"/>
+
+                            <p class="error" th:if="${#fields.hasErrors('pictureUrl')}" th:errors="*{pictureUrl}">
+                        </div>
+
+                    </div>
+
+                    <div class="mp-actions">
+                        <button type="submit" id="saveBtn" class="mp-btn-save" disabled>Save Changes</button>
+                    </div>
+                    <div class="mp-subscription-info"
+                         style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid var(--border);">
+                        <h4 style="margin: 0 0 0.8rem 0; font-size: 0.9rem; color: var(--muted); text-transform: uppercase;">
+                            Status</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <span class="info-label"
+                                      style="display: block; font-size: 0.7rem; color: var(--muted);">Type</span>
+                                <span th:text="${currentUser.subscription != null} ? ${currentUser.subscription.getPlanCode()} : '---'"
+                                      class="info-value" style="font-weight: 600; color: #3ad5ff;">Premium</span>
+                            </div>
+                            <div>
+                                <span class="info-label"
+                                      style="display: block; font-size: 0.7rem; color: var(--muted);">Purchased on</span>
+                                <span th:text="${currentUser.subscription != null} ? ${#temporals.format(currentUser.subscription.getStartDate(), 'dd.MM.yyyy HH:mm')} : '---'"
+                                      class="info-value" style="font-weight: 600; color: #fff;">01 Jun 2026</span>
+                            </div>
+                            <div>
+                                <span class="info-label"
+                                      style="display: block; font-size: 0.7rem; color: var(--muted);">Expires on</span>
+                                <span th:text="${currentUser.subscription != null} ? ${#temporals.format(currentUser.subscription.getExpirationDate(), 'dd.MM.yyyy HH:mm')} : '---'"
+                                      class="info-value" style="font-weight: 600; color: #ff3140;">01 Aug 2026</span>
+                            </div>
+
+                            <div th:if="${currentUser.subscription  == null}"><p
+                                    style="margin: 0; color: #ff3140;">
+                                No active subscription.
+                            </p>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="mp-movies-section" style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; color: #fff;">My Published Movies</h3>
+
+                    <div th:if="${movies == null  or movies.isEmpty()}" style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <p style="color: var(--muted); margin: 0;">You haven't published any movies yet.</p>
+                    </div>
+
+                    <div th:if="${movies != null and !movies.isEmpty()}">
+                        <table style="width: 100%; border-collapse: collapse; color: var(--text);">
+                            <thead>
+                            <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                                <th style="padding: 1rem 1rem 1rem 0;">Movie ID</th>
+                                <th style="padding: 1rem;">Title</th>
+                                <th style="padding: 1rem;">Genre</th>
+                                <th style="padding: 1rem;">Year</th>
+                                <th style="padding: 1rem; text-align: right;">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="movie : ${movies.content}" style="border-bottom: 1px solid var(--border);">
+                                <td th:text="${movie.id}" style="padding: 1rem 1rem 1rem 0; color: var(--muted);">#998</td>
+                                <td th:text="${movie.title}" style="padding: 1rem; font-weight: 500; color: #fff;">Inception</td>
+                                <td style="padding: 1rem;">
+                                    <span th:each="genre, iterStat : ${movie.genre}">
+                                        <span th:text="${genre}"></span>
+                                        <span th:if="${!iterStat.last}">, </span>
+                                    </span>
+                                </td>
+                                <td th:text="${movie.year}" style="padding: 1rem;">2010</td>
+                                <td style="padding: 1rem; text-align: right;">
+                                    <form th:action="@{/movies/{id}/edit(id=${movie.id}, source='profile')}" th:method="get" style="margin: 0;">
+                                        <button type="submit" class="btn btn-primary btn-sm" style="background-color: #007bff; border-color: #007bff;">
+                                            Edit
+                                        </button>
+                                        <input type="hidden" name="source" value="profile">
+
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="pagination" th:if="${movies.totalPages > 1}" style="margin-top: 2rem; display: flex; gap: 0.5rem;">
+                            <a th:if="${movies.hasPrevious()}"
+                               th:href="@{/home/my-profile(page=${movies.number - 1})}"
+                               class="page-link">
+                                &laquo;
+                            </a>
+
+                            <a th:if="${movies.totalPages > 0}" th:each="pageNumber : ${#numbers.sequence(0, movies.totalPages - 1)}"
+                               th:href="@{/home/my-profile(page=${pageNumber})}"
+                               th:text="${pageNumber + 1}"
+                               th:classappend="${pageNumber == movies.number} ? 'active' : ''"
+                               class="page-link">
+                            </a>
+
+                            <a th:if="${movies.hasNext()}"
+                               th:href="@{/home/my-profile(page=${movies.number + 1})}"
+                               class="page-link">
+                                &raquo;
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer class="site-footer-minimal" th:fragment="app-footer-minimal">
+    <div class="container footer-minimal-inner">
+        <a th:href="@{/about}" class="btn btn-secondary btn-sm">About Us</a>
+        <p>&copy; 2026 CineCatalog. All rights reserved.</p>
+        <span class="spacer"></span>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const editableFields = document.querySelectorAll(".editable-field");
+        const saveBtn = document.getElementById("saveBtn");
+
+        function checkFormFields() {
+            let hasText = false;
+            editableFields.forEach(field => {
+                if (field.value.trim() !== "") {
+                    hasText = true;
+                }
+            });
+
+            if (hasText) {
+                saveBtn.removeAttribute("disabled");
+            } else {
+                saveBtn.setAttribute("disabled", "true");
+            }
+        }
+
+        editableFields.forEach(field => {
+            field.addEventListener("input", checkFormFields);
+        });
+    });
+</script>
+
+</body>
+</html>

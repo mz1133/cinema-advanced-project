@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineCatalog | Subscription</title>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/subscriptions.css"/>
+
+</head>
+<body>
+<header class="site-header">
+    <div class="container header-inner"
+         style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+
+        <nav class="top-nav" aria-label="Main navigation">
+            <div class="user-profile-widget" style="display: flex; align-items: center; gap: 15px;">
+                <img th:src="${currentUser.pictureUrl}" alt="Profile" class="user-avatar"
+                     style="width: 40px; height: 40px; border-radius: 50%;"/>
+                <span th:text="${currentUser.username}" class="username">Username</span>
+
+                <form th:action="@{/logout}" th:method="post" class="m-0">
+                    <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+                </form>
+                <form th:action="@{/home}" th:method="get" class="m-0">
+                    <button type="submit" class="btn btn-secondary btn-sm">Home</button>
+                </form>
+            </div>
+        </nav>
+
+    </div>
+</header>
+
+
+<main class="container section">
+    <section class="subscription-hero">
+        <h1>Choose Your Plan</h1>
+        <ul style="list-style-type: none; padding: 0;">
+            <li>🎬 <strong>Contribute:</strong> Add new movies and actors to the catalog.</li>
+            <li>⭐ <strong>Recognition:</strong> Movies you add will display your username (Posted by).</li>
+            <li>🚀 <strong>Future Perks:</strong> Get early access to all upcoming premium features.</li>
+        </ul>
+        <p class="success-message" th:if="${successMessage}" th:text="${successMessage}" >.</p>
+        <p class="error-message" th:if="${error}" th:text="${error}" >.</p>
+    </section>
+
+    <section class="subscription-grid" >
+        <article class="subscription-card" th:each="plan : ${plans}">
+            <div>
+                <h2 th:text="${plan != null} ? ${plan.getCode()} : '---'"  class="card-title">Plan Name</h2>
+                <div th:text="${plan != null} ? ${plan.getPeriod() + ' Days'} : '---'" class="card-duration">1 Days</div>
+                <div th:text="${plan != null} ? ${'$ ' + plan.getPrice()} : '---'" class="card-price" >$9.99</div>
+            </div>
+
+            <button type="button" class="btn btn-primary"
+                    th:data-code="${plan.getCode()}"
+                    onclick="openPaymentModal(this.getAttribute('data-code'))">
+                Buy Now
+            </button>
+        </article>
+    </section>
+
+    <div id="paymentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:#1a1a1a; padding:30px; border-radius:10px; width:300px; color:white;">
+            <h3>Pay with Card</h3>
+            <form id="paymentForm" th:action="@{/home/subscriptions/purchase}" th:method="post" >
+                <input type="hidden" id="modalPlanCode" name="planCode">
+
+                <label>
+                    <input type="text" name="cardNumber" placeholder="Card Number" required style="width:100%; margin:10px 0; padding:10px;"/>
+                </label>
+                <label>
+                    <input type="text" name="expiry" placeholder="Expiry (MM/YY)" required style="width:100%; margin:10px 0; padding:10px;"/>
+                </label>
+                <label>
+                    <input type="text" name="cvv" placeholder="CVV" required style="width:100%; margin:10px 0; padding:10px;"/>
+                </label>
+
+                <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:10px;">
+                    <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Pay Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    function openPaymentModal(planCode) {
+
+        document.getElementById('modalPlanCode').value = planCode;
+        document.getElementById('paymentModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+
+        document.getElementById('paymentModal').style.display = 'none';
+        document.getElementById('paymentForm').reset();
+    }
+</script>
+
+
+</body>
+
+
+</html>

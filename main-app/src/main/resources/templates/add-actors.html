@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineCatalog | Add Actor</title>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/home.css"/>
+    <style>
+        .success-message {
+            color: green;
+            font-weight: bold;
+            font-size: 1.15rem;
+        }
+
+        .error-1 {
+            color: #dc3545;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .required::after {
+            content: " *";
+            color: #dc3545;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;">
+
+<header class="site-header user-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+
+        <div class="user-profile-widget">
+            <img th:src="${currentUser.pictureUrl}" alt="Profile Picture" class="user-avatar"/>
+            <div class="user-meta-info">
+                <span th:text="${currentUser.username}" class="username">AdminUser</span>
+            </div>
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard-wrapper" style="margin-top: 80px; display: flex; flex: 1;">
+    <div th:replace="~{fragments/sidebar :: user-sidebar}"></div>
+
+    <main class="main-content section"
+          style="flex: 1; display: flex; justify-content: center; align-items: flex-start;">
+        <div class="filters" style="width: 100%; max-width: 700px; margin-top: 2rem; padding: 2rem;">
+            <div class="section-head">
+                <h2 style="text-align: center; margin-bottom: 1.5rem;">Add New Actor</h2>
+                <p class="success-message" th:if="${successMessage}" th:text="${successMessage}"></p>
+            </div>
+
+            <form th:action="@{/movies/actors}" th:method="post" th:object="${actor}"  novalidate>
+                <div style="display: grid; gap: 1rem; grid-template-columns: 1fr 1fr;">
+
+                    <div class="field">
+                        <label>
+                            <span class="required">First Name</span>
+                            <span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"  class="error-1"  ></span>
+                        </label>
+                        <label for="firstName">
+                            <input th:field="*{firstName}" id="firstName" type="text" name="firstName" required placeholder="e.g. Tom..."/>
+
+                        </label>
+                    </div>
+
+                    <div class="field">
+                        <label>
+                            <span class="required">Last Name</span>
+                            <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error-1"  ></span>
+                        </label>
+                        <input th:field="*{lastName}"  type="text" name="lastName" required placeholder="e.g. Hanks..."/>
+                    </div>
+
+                    <div class="field">
+                        <label>
+                            <span  class="required">Birth Date</span>
+                            <span th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}" class="error-1"  ></span>
+                        </label>
+                        <input th:field="*{birthDate}" min="1900-01-01" max="2099-12-31"  type="date" name="birthDate" required/>
+                    </div>
+
+                    <div class="field">
+                        <label>
+                            <span class="required">Age</span>
+                            <span th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="error-1"  ></span>
+                        </label>
+                        <input th:field="*{age}"  type="number" name="age" required placeholder="e.g. 68..."/>
+                    </div>
+
+                    <div class="field" style="grid-column: span 2;">
+                        <label>Picture URL</label>
+                        <span th:if="${#fields.hasErrors('pictureUrl')}" th:errors="*{pictureUrl}" class="error-1"  ></span>
+                        <input th:field="*{pictureUrl}"  type="url" name="pictureUrl" placeholder="https://image-url.com/actor.jpg..."/>
+                    </div>
+
+                    <div class="field" style="grid-column: span 2;">
+                        <label>Biography</label>
+                        <textarea th:field="*{biography}" name="biography" rows="5"
+                                  placeholder="Write a short biography here..."
+                                  style="width: 100%; background: #0d1322; border: 1px solid #4a5677; border-radius: 10px; color: #fff; padding: .65rem;"></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; text-align: right;">
+                    <button type="submit" class="btn btn-primary" style="padding: .75rem 2rem;">Save Actor</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/footer :: app-footer-minimal}"></div>
+
+</body>
+</html>

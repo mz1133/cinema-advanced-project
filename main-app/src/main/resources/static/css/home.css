@@ -1,0 +1,131 @@
+
+.user-header {
+    background: rgba(17, 21, 34, 0.95);
+}
+
+.user-profile-widget {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #3ad5ff;
+    box-shadow: 0 0 8px rgba(58, 213, 255, 0.5);
+}
+
+.user-meta-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-meta-info .username {
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.user-meta-info .user-id {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+
+.dashboard-wrapper {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 1.5rem;
+    align-items: flex-start;
+}
+
+.left-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1rem 0;
+    position: sticky;
+    top: 100px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.sidebar-link {
+    padding: 0.75rem 1.25rem;
+    color: var(--muted);
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.sidebar-link:hover {
+    color: var(--text);
+    background: rgba(29, 36, 56, 0.5);
+    border-left-color: #4a5677;
+}
+
+.sidebar-link.active {
+    color: #fff;
+    background: rgba(58, 213, 255, 0.08);
+    border-left-color: #3ad5ff;
+}
+
+
+.sidebar-link.admin-link {
+    color: #ff914d;
+    border-left-color: #ff914d;
+}
+
+.sidebar-link.admin-link:hover {
+    background: rgba(255, 145, 77, 0.1);
+}
+
+.main-content {
+    flex-grow: 1;
+    padding-top: 0 !important;
+}
+
+
+@media (max-width: 992px) {
+    .dashboard-wrapper {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .left-sidebar {
+        width: 100%;
+        position: static;
+    }
+    .sidebar-menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .sidebar-link {
+        border-top: 3px solid transparent;
+        border-left: none;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    .sidebar-link.active {
+        border-top-color: #3ad5ff;
+        border-left: none;
+    }
+    .sidebar-link.admin-link {
+        border-top-color: #ff914d;
+        border-left: none;
+    }
+
+}

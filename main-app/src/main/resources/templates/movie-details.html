@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${'CineCatalog | ' + movie.title}">CineCatalog | Movie Details</title>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/movie-details.css"/>
+</head>
+<body>
+
+
+<main>
+    <section class="movie-hero">
+        <div class="backdrop-overlay"></div>
+        <div class="container hero-content">
+            <div class="movie-main-info">
+                <h1 class="movie-title" th:text="${movie.title}">Movie Title</h1>
+                <div class="movie-quick-meta">
+
+                    <span class="year" th:text="${movie.year}">2024</span>
+
+                    <span class="duration"
+                          th:text="${(movie.durationMinutes / 60) + 'h ' + (movie.durationMinutes % 60) + 'min'}">
+                          2h 15min
+                    </span>
+
+                    <span class="rating" th:text="${'★ ' + movie.rating}">★ 8.1</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container movie-details-section">
+        <div class="details-grid">
+            <div class="poster-column">
+                <div class="movie-poster-large poster-1" th:text="${movie.title}">
+                    Movie Title
+                </div>
+
+            </div>
+
+            <div class="info-column">
+                <div class="tags-row" style="display: flex; flex-direction: column; gap: 10px;">
+
+                    <div class="tag-group" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span style="color: #888; font-size: 0.9em; text-transform: uppercase;">Genres:</span>
+                        <span class="badge" th:each="g : ${movie.genre}" th:text="${g}">Thriller</span>
+                    </div>
+
+                    <div class="tag-group" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span style="color: #888; font-size: 0.9em; text-transform: uppercase;">Countries:</span>
+                        <span class="badge" th:each="c : ${movie.country}" th:text="${c}">USA</span>
+                    </div>
+
+                </div>
+
+                <div class="description-block">
+                    <h2>Description</h2>
+                    <p th:text="${movie.description}">
+                        Description text...
+                    </p>
+                </div>
+
+                <div class="meta-info-grid">
+                    <div class="meta-item">
+                        <span class="label">Director:</span>
+                        <span class="value" th:text="${movie.director}">Name</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="label">Producer:</span>
+                        <!-- Итерираме през списъка с продуценти -->
+                        <span class="value" th:text="${#strings.listJoin(movie.producers, ', ')}">Names</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="label">Cast:</span>
+                        <span class="value"><th:block th:each="actor, iterStat : ${movie.actors}">
+                            <span th:text="${actor.firstName + ' ' + actor.lastName + (!iterStat.last ? ', ' : '')}">Actor Name</span></th:block></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="label">Written by:</span>
+                        <span class="value" th:text="${movie.writerBy}">Name</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="label">Studio:</span>
+                        <span class="value" th:text="${movie.studio}">Studio Name</span>
+                    </div>
+                    <div class="meta-item" th:if="${movie.postedBy != null and !movie.postedBy.isEmpty()}">
+                        <span class="label">Posted by:</span><span class="value">
+                        <span th:if="${#strings.equalsIgnoreCase(movie.postedBy, 'cine-catalog')}" style="color: #ffc107; font-weight: bold; background: rgba(255,193,7,0.1); padding: 2px 8px; border-radius: 4px;">🎬 CineCatalog</span>
+                        <span th:unless="${#strings.equalsIgnoreCase(movie.postedBy, 'cine-catalog')}" style="color: #3ad5ff; font-weight: bold;" th:text="'@' + ${movie.postedBy}">@username</span>
+                    </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<div th:replace="~{fragments/footer :: app-footer-minimal}"></div>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+subscriptions-plans:
+  plans:
+    - code: STANDARD-30
+      price: 9.99
+      period: 30
+      active: true
+
+
+
+    - code: STANDARD-90
+      price: 24.99
+      period: 90
+      active: true
+

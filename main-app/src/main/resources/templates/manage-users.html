@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineCatalog | Manage Users</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/home.css" />
+    <style>
+        .error-1 {
+            color: #dc3545;
+            font-size: 20px;
+            font-weight: 500;
+            margin-top: 5px;
+            display: block;
+        }
+        .success-message {
+            color: green;
+            font-weight: bold;
+            ont-size: 1.25rem;
+        }
+    </style>
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+
+
+<header class="site-header user-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+
+        <div class="user-profile-widget">
+            <img th:src="${currentUser.pictureUrl}"
+                 alt="Profile Picture" class="user-avatar" />
+
+            <div class="user-meta-info">
+                <span th:text="${currentUser.username}" class="username">AlexDeveloper</span>
+            </div>
+
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard-wrapper" style="margin-top: 100px; display: flex; flex: 1;">
+    <div th:replace="~{fragments/sidebar :: user-sidebar}"></div>
+
+    <main class="main-content section" style="flex: 1; padding: 2rem;">
+
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+            <a th:href="@{/admin/movies}" class="btn btn-secondary">Manage Movies</a>
+            <a th:href="@{/admin/users}" class="btn btn-primary">Manage Users</a>
+        </div>
+
+        <form th:action="@{/admin/users}" th:method="get" class="filters" style="margin-bottom: 1.5rem; padding: 1rem; display: flex; gap: 1rem; align-items: center;">
+            <div style="width: 180px;">
+                <select name="searchType" style="padding: 0.65rem; width: 100%; background: #0d1322; border: 1px solid #4a5677; border-radius: 10px; color: #fff;">
+                    <option th:selected="${searchType == 'username'}" value="username">Search by Username</option>
+                    <option th:selected="${searchType == 'id'}" value="id">Search by ID</option>
+                </select>
+            </div>
+            <div style="flex: 1;">
+                <input th:value="${keyword}" name="keyword" type="text" placeholder="Enter value..." style="padding: 0.65rem; width: 100%; background: #0d1322; border: 1px solid #4a5677; border-radius: 10px; color: #fff;" />
+            </div>
+            <button class="btn btn-primary" style="padding: 0.65rem 1.5rem;">Search</button>
+        </form>
+
+        <div class="filters" style="padding: 1.5rem;">
+            <div class="section-head">
+                <h2>Manage Users</h2>
+                <p class="error-1" th:if="${message}" th:text="${message}">
+                <p class="error-1" th:if="${error}" th:text="${error}">
+                <p class="success-message" th:if="${successChangeRole}" th:text="${successChangeRole}">
+                <p class="success-message" th:if="${successChangeUserStatus}" th:text="${successChangeUserStatus}">
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; color: var(--text);">
+                <thead>
+                <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                    <th style="padding: 1rem;">User ID</th>
+                    <th style="padding: 1rem;">Active</th>
+                    <th style="padding: 1rem;">Username</th>
+                    <th style="padding: 1rem;">Email</th>
+                    <th style="padding: 1rem;">Role</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each=" user : ${users.content}" style="border-bottom: 1px solid var(--border);">
+                    <td th:text="${user.id}" style="padding: 1rem; color: var(--muted);">#10452</td>
+                    <td th:text="${user.active}" th:style="${user.isActive} ? 'color: #28a745; font-weight: bold;' : 'color: #dc3545; font-weight: bold;'" style="padding: 1rem;" ></td>
+                    <td th:text="${user.username}" style="padding: 1rem;">AlexDeveloper</td>
+                    <td th:text="${user.email}" style="padding: 1rem;">alex@example.com</td>
+
+                    <td style="padding: 1rem;">
+                    <form th:action="@{/admin/users/role}" th:method="post" style="display: flex; gap: 0.5rem; align-items: center;" onsubmit="return confirm('Are you sure you want to change this user role?');">
+                        <select name="role" style="padding: 0.35rem 0.5rem; background: #0d1322; border: 1px solid #4a5677; border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                            <option th:each="role : ${roles}"
+                                    th:value="${role.toString()}"
+                                    th:text="${role.toString()}"
+                                    th:selected="${role == user.role}"
+                                    th:style="${role == user.role} ? 'color: #28a745; font-weight: bold;' : 'color: #dc3545;'">
+                            </option>
+
+                        </select>
+
+                        <input type="hidden" name="userToChangeRoleId" th:value="${user.id}" />
+                        <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.35rem 0.6rem;">Save</button>
+                    </form>
+                </td>
+
+                    <td style="padding: 1rem; text-align: center;">
+                        <form th:action="@{/admin/users/active}" th:method="patch"
+                              onsubmit="return confirm('Are you sure you want to change this user status?');">
+
+                            <input type="hidden" name="userId" th:value="${user.id}">
+
+                            <button type="submit" class="btn btn-primary btn-sm" th:style="${user.active} ? 'background: #dc3545;' : 'background: #28a745;'">
+                                <span th:if="${user.active}">Make inactive</span>
+                                <span th:unless="${user.active}">Make active</span>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="pagination"  style="margin-top: 1rem;" th:if="${users.totalElements > 0}">
+                <a th:if="${users.hasPrevious()}"
+                   th:href="@{/admin/users(page=${users.number - 1}, keyword=${keyword})}" class="page-link">&laquo;
+                </a>
+                <a th:each="pageNumber : ${#numbers.sequence(0, users.totalPages - 1)}"
+                   class="page-link"
+                   th:text="${pageNumber + 1}"
+                   th:href="@{/admin/users(page=${pageNumber}, keyword=${keyword})}"
+                   th:classappend="${pageNumber == users.number} ? 'active'">
+                </a>
+                <a class="page-link"
+                   th:if="${users.hasNext()}"
+                   th:href="@{/admin/users(page=${users.number + 1}, keyword=${keyword})}">&raquo;
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer th:replace="~{fragments/footer :: app-footer-minimal}"></footer>
+
+</body>
+</html>
