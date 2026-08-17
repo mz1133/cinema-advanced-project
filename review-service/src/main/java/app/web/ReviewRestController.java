@@ -6,6 +6,8 @@ import app.web.dto.CreateReviewDto;
 import app.web.dto.UpdateReviewDto;
 import app.web.dto.ViewReviewsAndCommentsDto;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,9 +50,10 @@ public class ReviewRestController {
     }
 
     @GetMapping("/movies/{id}")
-    public ResponseEntity<List<ViewReviewsAndCommentsDto>> getAllReviews(@PathVariable UUID id) {
+    public ResponseEntity<Page<ViewReviewsAndCommentsDto>> getAllReviewsAndComments(@PathVariable UUID id,
+                                                                                    Pageable pageable) {
 
-       List<ViewReviewsAndCommentsDto> reviewsAndComments = reviewService.getAllActivesReviewsAndComments(id);
+       Page<ViewReviewsAndCommentsDto> reviewsAndComments = reviewService.getAllActivesReviewsAndComments(id, pageable);
 
        return ResponseEntity.status(HttpStatus.OK).body(reviewsAndComments);
 

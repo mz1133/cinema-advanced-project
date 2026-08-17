@@ -9,6 +9,8 @@ import app.web.dto.CreateReviewDto;
 import app.web.dto.UpdateReviewDto;
 import app.web.dto.ViewCommentsDto;
 import app.web.dto.ViewReviewsAndCommentsDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -75,45 +77,44 @@ public class ReviewService {
         reviewRepository.save(reviewToUpdate);
     }
 
-    public List<ViewReviewsAndCommentsDto> getAllActivesReviewsAndComments(UUID movieId) {
+    public Page<ViewReviewsAndCommentsDto> getAllActivesReviewsAndComments(UUID movieId, Pageable pageable) {
 
-        List<Review> reviews =
-                getAllReviewsByMovieIdIsNotDeleted(movieId);
+        Page<Review> reviews =
+                getAllReviewsByMovieIdIsNotDeleted(movieId, pageable);
 
-        return reviews.stream()
-                .map(review -> {
+        return reviews.map(review -> {
 
-                    List<Comment> comments =
-                            commentService
-                                    .getAllCommentsByReviewIdAndIsDeletedFalse(review.getId());
 
-                    List<ViewCommentsDto> commentsDto = comments.stream()
-                            .map(comment -> new ViewCommentsDto(
-                                    comment.getId(),
-                                    comment.getContent(),
-                                    comment.getPublisherUsername(),
-                                    comment.getCreatedOn(),
-                                    comment.getUpdatedOn()
-                            ))
-                            .toList();
+            List<Comment> comments = commentService.getAllCommentsByReviewIdAndIsDeletedFalse(review.getId());
 
-                    return new ViewReviewsAndCommentsDto(
-                            review.getContent(),
-                            review.getId(),
-                            review.getPublisherUsername(),
-                            review.getUserRating(),
-                            review.getCreatedOn(),
-                            commentsDto
-                    );
-                })
-                .toList();
+
+            List<ViewCommentsDto> commentsDto = comments.stream()
+                    .map(comment -> new ViewCommentsDto(
+                            comment.getId(),
+                            comment.getContent(),
+                            comment.getPublisherUsername(),
+                            comment.getCreatedOn(),
+                            comment.getUpdatedOn()
+                    ))
+                    .toList();
+
+
+            return new ViewReviewsAndCommentsDto(
+                    review.getContent(),
+                    review.getId(),
+                    review.getPublisherUsername(),
+                    review.getUserRating(),
+                    review.getCreatedOn(),
+                    commentsDto
+            );
+        });
 
 
     }
 
-    public List<Review> getAllReviewsByMovieIdIsNotDeleted(UUID movieId) {
+    public Page<Review> getAllReviewsByMovieIdIsNotDeleted(UUID movieId, Pageable pageable) {
 
-     return reviewRepository.findAllByMovieIdAndIsDeletedFalse(movieId);
+     return reviewRepository.findAllByMovieIdAndIsDeletedFalse(movieId, pageable);
     }
 
 
