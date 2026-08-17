@@ -22,6 +22,8 @@ import java.util.UUID;
 @RequestMapping("/movies")
 public class MovieController {
 
+    private static final int REVIEWS_PAGE_SIZE = 10;
+
     private final UserService userService;
     private final ActorService actorService;
     private final MovieService movieService;
@@ -78,16 +80,15 @@ public class MovieController {
                                    @RequestParam(defaultValue = "0") int page) {
 
         Movie movie = movieService.getMovie(movieId);
-        int pageSize = 10;
 
-        CustomPageDto<ViewReviewsAndCommentsDto> reviewsPage = reviewClient.getReviewMovie(movieId, page, pageSize);
+        CustomPageDto<ViewReviewsAndCommentsDto> reviewsPage = reviewClient.getReviewMovie(movieId, page, REVIEWS_PAGE_SIZE);
 
         ModelAndView modelAndView = new ModelAndView("movie-details");
 
         modelAndView.addObject("movie", movie);
         modelAndView.addObject("review", reviewsPage.getContent());
         modelAndView.addObject("currentPage", reviewsPage.getCurrentPage());
-        modelAndView.addObject("pageSize", pageSize);
+        modelAndView.addObject("pageSize", REVIEWS_PAGE_SIZE);
         modelAndView.addObject("totalReviews", reviewsPage.getTotalElements());
 
         return modelAndView;
