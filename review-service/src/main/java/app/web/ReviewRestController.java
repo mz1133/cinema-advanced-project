@@ -4,6 +4,7 @@ import app.review.model.Review;
 import app.review.service.ReviewService;
 import app.web.dto.CreateReviewDto;
 import app.web.dto.UpdateReviewDto;
+import app.web.dto.ViewReviewsAndCommentsDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,11 +48,11 @@ public class ReviewRestController {
     }
 
     @GetMapping("/movies/{id}")
-    public ResponseEntity<List<Review>> getAllReviews(@PathVariable UUID id) {
+    public ResponseEntity<List<ViewReviewsAndCommentsDto>> getAllReviews(@PathVariable UUID id) {
 
-       List<Review> review = reviewService.getAllReviewsByMovieIdIsNotDeleted(id);
+       List<ViewReviewsAndCommentsDto> reviewsAndComments = reviewService.getAllActivesReviewsAndComments(id);
 
-       return ResponseEntity.status(HttpStatus.OK).body(review);
+       return ResponseEntity.status(HttpStatus.OK).body(reviewsAndComments);
 
     }
 }

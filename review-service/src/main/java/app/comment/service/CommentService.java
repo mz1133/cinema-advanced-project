@@ -63,7 +63,7 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public List<Comment> getAllCommentsByMovieIdIsNotDeleted(UUID movieId) {
+    public List<Comment> getAllCommentsByReviewIdAndIsDeletedFalse(UUID movieId) {
 
         return commentRepository.findAllByReviewIdAndIsDeletedFalse(movieId);
     }
@@ -74,4 +74,6 @@ public class CommentService {
         return  commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ERROR_MESSAGE_COMMENT_NOT_FOUND));
     }
+
+
 }
