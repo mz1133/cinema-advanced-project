@@ -1,5 +1,6 @@
 package app.web.dto;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,14 +15,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UpdateCommentDto {
 
-    @NotBlank
+    @Column(nullable = false)
     private UUID commentId;
 
     @NotBlank
-    private UUID publisherId;
-
-    @NotBlank(message = "Symbol must be between 5 and 50 symbols")
-    private String content;
-
-
+    private String commentContent;
 }

@@ -4,7 +4,6 @@ import app.comment.model.Comment;
 import app.comment.repository.CommentRepository;
 import app.exception.CommentNotFoundException;
 import app.web.dto.CreateCommentDto;
-import app.web.dto.DeleteCommentDto;
 import app.web.dto.UpdateCommentDto;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +40,9 @@ public class CommentService {
 
     }
 
-    public void  deleteComment(DeleteCommentDto deleteCommentDto) {
+    public void  deleteComment(UUID id) {
 
-        Comment comment = findCommentById(deleteCommentDto.getCommentId());
+        Comment comment = findCommentById(id);
 
         if(comment.isDeleted()) {
             throw new CommentNotFoundException(ERROR_MESSAGE_COMMENT_NOT_FOUND);
@@ -57,7 +56,7 @@ public class CommentService {
 
         Comment comment = findCommentById(updateCommentDto.getCommentId());
 
-        comment.setContent(updateCommentDto.getContent());
+        comment.setContent(updateCommentDto.getCommentContent());
         comment.setUpdatedOn(LocalDateTime.now());
 
         return commentRepository.save(comment);
