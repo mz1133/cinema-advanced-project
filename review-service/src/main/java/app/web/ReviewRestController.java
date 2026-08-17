@@ -1,0 +1,57 @@
+package app.web;
+
+import app.review.model.Review;
+import app.review.service.ReviewService;
+import app.web.dto.CreateReviewDto;
+import app.web.dto.UpdateReviewDto;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("api/reviews")
+public class ReviewRestController {
+
+    private final ReviewService reviewService;
+
+    public ReviewRestController(ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> createReview(@Valid @RequestBody CreateReviewDto createReviewDto) {
+
+        reviewService.createReview(createReviewDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
+    }
+
+    @PostMapping("/edit")
+    public ResponseEntity<Void> updateReview(@Valid @RequestBody UpdateReviewDto updateReviewDto) {
+
+        reviewService.updateReview(updateReviewDto);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReview(@PathVariable UUID id) {
+
+        reviewService.deleteReview(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/movies/{id}")
+    public ResponseEntity<List<Review>> getAllReviews(@PathVariable UUID id) {
+
+       List<Review> review = reviewService.getAllReviewsByMovieIdIsNotDeleted(id);
+
+       return ResponseEntity.status(HttpStatus.OK).body(review);
+
+    }
+}
