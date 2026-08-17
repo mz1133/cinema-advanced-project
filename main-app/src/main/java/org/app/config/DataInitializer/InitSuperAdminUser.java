@@ -20,7 +20,7 @@ public class InitSuperAdminUser implements ApplicationRunner {
     private final static String ADMIN_FIRST_NAME = "Ivan";
     private final static String ADMIN_LAST_NAME = "Petrov";
     private final static LocalDateTime LOCAL_DATE_TIME_NOW = LocalDateTime.now();
-    private final static String DEFAULT_PICTURE_URL = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+    private final static String DEFAULT_PICTURE_URL = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 
     private final UserRepository userRepository;

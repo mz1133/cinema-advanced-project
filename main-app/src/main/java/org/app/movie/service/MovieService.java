@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.app.actor.model.Actor;
 import org.app.actor.repository.ActorRepository;
 import org.app.actor.service.ActorService;
-import org.app.exeption.MovieNotFoundException;
+import org.app.exception.MovieNotFoundException;
 import org.app.movie.model.Country;
 import org.app.movie.model.Genre;
 import org.app.movie.model.Movie;

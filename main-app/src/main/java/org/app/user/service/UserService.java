@@ -1,9 +1,9 @@
 package org.app.user.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.app.exeption.ChangeUserRoleException;
-import org.app.exeption.UserNotFoundException;
-import org.app.exeption.ValidationFailedException;
+import org.app.exception.ChangeUserRoleException;
+import org.app.exception.UserNotFoundException;
+import org.app.exception.ValidationFailedException;
 import org.app.subscription.model.Subscription;
 import org.app.user.model.User;
 import org.app.user.model.Role;

@@ -1,8 +1,8 @@
 package org.app.subscription.service;
 
 import org.app.config.SubscriptionProperties;
-import org.app.exeption.AlreadyHavePlanException;
-import org.app.exeption.UserNotFoundException;
+import org.app.exception.AlreadyHavePlanException;
+import org.app.exception.UserNotFoundException;
 import org.app.subscription.model.Subscription;
 import org.app.subscription.repository.SubscriptionRepository;
 import org.app.user.model.User;

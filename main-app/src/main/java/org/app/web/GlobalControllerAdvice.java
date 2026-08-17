@@ -1,6 +1,6 @@
 package org.app.web;
 import jakarta.servlet.http.HttpServletResponse;
-import org.app.exeption.*;
+import org.app.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
