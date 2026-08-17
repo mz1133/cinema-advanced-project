@@ -11,6 +11,7 @@ import org.app.movie.model.Genre;
 import org.app.movie.model.Movie;
 import org.app.movie.repository.MovieRepository;
 import org.app.movie.specification.MovieSpecification;
+import org.app.reviewclient.ReviewClient;
 import org.app.user.model.Role;
 import org.app.user.model.User;
 import org.app.user.service.UserService;
@@ -46,11 +47,13 @@ public class MovieService {
     private final ActorRepository actorRepository;
     private final UserService userService;
 
+
     public MovieService(ActorService actorService, MovieRepository movieRepository, ActorRepository actorRepository, UserService userService) {
         this.actorService = actorService;
         this.movieRepository = movieRepository;
         this.actorRepository = actorRepository;
         this.userService = userService;
+
     }
 
     public void addMovie(CreateMovieRequest createMovieRequest, String username, Role role) {
@@ -271,7 +274,6 @@ public class MovieService {
 
                 .build();
     }
-
 
 
     private String getPostedByName(String username, Role role) {

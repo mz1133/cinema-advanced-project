@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.app.actor.service.ActorService;
 import org.app.movie.model.Movie;
 import org.app.movie.service.MovieService;
+import org.app.reviewclient.ReviewClient;
 import org.app.user.model.Role;
 import org.app.user.model.User;
 import org.app.user.service.UserService;
@@ -24,11 +25,13 @@ public class MovieController {
     private final UserService userService;
     private final ActorService actorService;
     private final MovieService movieService;
+    private final ReviewClient reviewClient;
 
-    public MovieController(UserService userService, ActorService actorService, MovieService movieService) {
+    public MovieController(UserService userService, ActorService actorService, MovieService movieService, ReviewClient reviewClient) {
         this.userService = userService;
         this.actorService = actorService;
         this.movieService = movieService;
+        this.reviewClient = reviewClient;
     }
 
     @GetMapping("/new")
@@ -71,12 +74,21 @@ public class MovieController {
     }
 
     @GetMapping("/details/{movieId}")
-    public ModelAndView getDetails(@PathVariable UUID movieId) {
+    public ModelAndView getDetails(@PathVariable UUID movieId,
+                                   @RequestParam(defaultValue = "0") int page) {
 
         Movie movie = movieService.getMovie(movieId);
+        int pageSize = 10;
+
+        CustomPageDto<ViewReviewsAndCommentsDto> reviewsPage = reviewClient.getReviewMovie(movieId, page, pageSize);
 
         ModelAndView modelAndView = new ModelAndView("movie-details");
+
         modelAndView.addObject("movie", movie);
+        modelAndView.addObject("review", reviewsPage.getContent());
+        modelAndView.addObject("currentPage", reviewsPage.getCurrentPage());
+        modelAndView.addObject("pageSize", pageSize);
+        modelAndView.addObject("totalReviews", reviewsPage.getTotalElements());
 
         return modelAndView;
     }
