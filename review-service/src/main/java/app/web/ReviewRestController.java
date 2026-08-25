@@ -37,24 +37,25 @@ public class ReviewRestController {
     public ResponseEntity<Void> deleteReview(@PathVariable UUID id, boolean isAdmin) {
 
         reviewService.deleteReview(id, isAdmin);
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/movies/{id}")
-    public ResponseEntity<CustomPageDto<ViewReviewsAndCommentsDto>> getAllReviewsAndCommentByMovie(@PathVariable UUID id,
+    public ResponseEntity<CustomPageDto<ViewReviewsAndCommentsDto>>
+    getAllReviewsAndCommentByMovie(@PathVariable UUID id,
                                                                                                    Pageable pageable) {
-
         Page<ViewReviewsAndCommentsDto> reviewsAndComments = reviewService
                 .getAllActivesReviewsAndCommentsByMovieId(id, pageable);
 
         CustomPageDto<ViewReviewsAndCommentsDto> response = new CustomPageDto<>();
+
         response.setContent(reviewsAndComments.getContent());
         response.setCurrentPage(reviewsAndComments.getNumber());
         response.setTotalPages(reviewsAndComments.getTotalPages());
         response.setTotalElements(reviewsAndComments.getTotalElements());
 
         return ResponseEntity.ok(response);
-
     }
 
     @GetMapping("/reviews")
@@ -112,7 +113,9 @@ public class ReviewRestController {
 
     @PostMapping("/restore/{id}")
     public ResponseEntity<Void> restoreReview(@PathVariable("id") UUID id) {
+
         reviewService.restoreReview(id);
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -120,6 +123,7 @@ public class ReviewRestController {
     public ResponseEntity<Void> updateReview(@PathVariable UUID id,
                                              @Valid @RequestBody EditReviewDto dto) {
         reviewService.updateReview(id, dto);
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

@@ -49,14 +49,11 @@ public class ReviewServiceUTest {
     @InjectMocks
     private ReviewService reviewService;
 
-
-
-
     @Test
     void givenValidReviewData_whenCreateReview_thenReviewIsCreatedAndSaved() {
 
-
         UUID movieId = UUID.randomUUID();
+
         UUID publisherId = UUID.randomUUID();
 
         CreateReviewDto dto = CreateReviewDto.builder()
@@ -81,9 +78,7 @@ public class ReviewServiceUTest {
 
         when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
 
-
         Review result = reviewService.createReview(dto);
-
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isEqualTo("Amazing movie!");
@@ -97,12 +92,8 @@ public class ReviewServiceUTest {
         verify(reviewRepository, times(1)).save(any(Review.class));
     }
 
-
-
-
     @Test
     void givenActiveReview_whenDeleteReviewByUser_thenReviewIsMarkedAsDeleted() {
-
 
         UUID reviewId = UUID.randomUUID();
 
@@ -115,9 +106,7 @@ public class ReviewServiceUTest {
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.of(review));
 
-
         reviewService.deleteReview(reviewId, false);
-
 
         assertThat(review.isDeleted()).isTrue();
         assertThat(review.isDeletedByAdministrator()).isFalse();
@@ -125,10 +114,8 @@ public class ReviewServiceUTest {
         verify(reviewRepository, times(1)).save(review);
     }
 
-
     @Test
     void givenActiveReview_whenDeleteReviewByAdmin_thenReviewIsMarkedAsDeletedByAdministrator() {
-
 
         UUID reviewId = UUID.randomUUID();
 
@@ -141,9 +128,7 @@ public class ReviewServiceUTest {
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.of(review));
 
-
         reviewService.deleteReview(reviewId, true);
-
 
         assertThat(review.isDeleted()).isTrue();
         assertThat(review.isDeletedByAdministrator()).isTrue();
@@ -151,10 +136,8 @@ public class ReviewServiceUTest {
         verify(reviewRepository, times(1)).save(review);
     }
 
-
     @Test
     void givenDeletedReview_whenDeleteReview_thenReviewNotFoundExceptionIsThrown() {
-
 
         UUID reviewId = UUID.randomUUID();
 
@@ -166,7 +149,6 @@ public class ReviewServiceUTest {
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.of(review));
 
-
         assertThrows(
                 ReviewNotFoundException.class,
                 () -> reviewService.deleteReview(reviewId, false)
@@ -175,17 +157,14 @@ public class ReviewServiceUTest {
         verify(reviewRepository, never()).save(any());
     }
 
-
     @Test
     void givenMissingReview_whenDeleteReview_thenReviewNotFoundExceptionIsThrown() {
-
 
         UUID reviewId = UUID.randomUUID();
 
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.empty());
 
-
         assertThrows(
                 ReviewNotFoundException.class,
                 () -> reviewService.deleteReview(reviewId, false)
@@ -194,12 +173,8 @@ public class ReviewServiceUTest {
         verify(reviewRepository, never()).save(any());
     }
 
-
-
-
     @Test
     void givenExistingReview_whenUpdateReview_thenReviewDetailsAreUpdatedAndSaved() {
-
 
         UUID reviewId = UUID.randomUUID();
 
@@ -217,9 +192,7 @@ public class ReviewServiceUTest {
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.of(review));
 
-
         reviewService.updateReview(reviewId, dto);
-
 
         assertThat(review.getContent()).isEqualTo("Updated content");
         assertThat(review.getUserRating()).isEqualTo(9);
@@ -227,10 +200,8 @@ public class ReviewServiceUTest {
         verify(reviewRepository, times(1)).save(review);
     }
 
-
     @Test
     void givenMissingReview_whenUpdateReview_thenReviewNotFoundExceptionIsThrown() {
-
 
         UUID reviewId = UUID.randomUUID();
 
@@ -242,7 +213,6 @@ public class ReviewServiceUTest {
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.empty());
 
-
         assertThrows(
                 ReviewNotFoundException.class,
                 () -> reviewService.updateReview(reviewId, dto)
@@ -251,12 +221,8 @@ public class ReviewServiceUTest {
         verify(reviewRepository, never()).save(any());
     }
 
-
-
-
     @Test
     void givenExistingReview_whenGetReviewById_thenReturnReview() {
-
 
         UUID reviewId = UUID.randomUUID();
 
@@ -268,9 +234,7 @@ public class ReviewServiceUTest {
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.of(review));
 
-
         Review result = reviewService.getReviewById(reviewId);
-
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(reviewId);
@@ -279,16 +243,13 @@ public class ReviewServiceUTest {
         verify(reviewRepository, times(1)).findById(reviewId);
     }
 
-
     @Test
     void givenMissingReview_whenGetReviewById_thenReviewNotFoundExceptionIsThrown() {
-
 
         UUID reviewId = UUID.randomUUID();
 
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.empty());
-
 
         assertThrows(
                 ReviewNotFoundException.class,
@@ -296,12 +257,8 @@ public class ReviewServiceUTest {
         );
     }
 
-
-
-
     @Test
     void givenActiveReviewsForMovie_whenGetAllReviewsByMovieIdIsNotDeleted_thenReturnReviews() {
-
 
         UUID movieId = UUID.randomUUID();
 
@@ -329,10 +286,8 @@ public class ReviewServiceUTest {
                 .findAllByMovieIdAndIsDeletedFalseOrderByCreatedOnDesc(movieId, pageable))
                 .thenReturn(page);
 
-
         Page<Review> result =
                 reviewService.getAllReviewsByMovieIdIsNotDeleted(movieId, pageable);
-
 
         assertThat(result.getContent()).hasSize(2);
         assertThat(result.getContent())
@@ -342,12 +297,8 @@ public class ReviewServiceUTest {
                 .findAllByMovieIdAndIsDeletedFalseOrderByCreatedOnDesc(movieId, pageable);
     }
 
-
-
-
     @Test
     void givenReviewsWithComments_whenGetAllReviewsAndComments_thenReturnReviewsWithComments() {
-
 
         UUID reviewId = UUID.randomUUID();
         UUID movieId = UUID.randomUUID();
@@ -391,7 +342,6 @@ public class ReviewServiceUTest {
                 List.of(reviewId)))
                 .thenReturn(List.of(comment));
 
-
         Page<AdminReviewDto> result =
                 reviewService.getAllReviewsAndComments(
                         null,
@@ -400,7 +350,6 @@ public class ReviewServiceUTest {
                         null,
                         pageable
                 );
-
 
         assertThat(result.getContent()).hasSize(1);
 
@@ -428,10 +377,8 @@ public class ReviewServiceUTest {
                 .findByReviewIdInAndIsDeletedFalse(List.of(reviewId));
     }
 
-
     @Test
     void givenNoReviews_whenGetAllReviewsAndComments_thenReturnEmptyPage() {
-
 
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -444,7 +391,6 @@ public class ReviewServiceUTest {
         when(reviewRepository.findAll((Specification<Review>) any(), eq(pageable)))
                 .thenReturn(emptyPage);
 
-
         Page<AdminReviewDto> result =
                 reviewService.getAllReviewsAndComments(
                         null,
@@ -453,7 +399,6 @@ public class ReviewServiceUTest {
                         null,
                         pageable
                 );
-
 
         assertThat(result.getContent()).isEmpty();
 
@@ -464,12 +409,8 @@ public class ReviewServiceUTest {
                 .findByReviewIdInAndIsDeletedFalse(any());
     }
 
-
-
-
     @Test
     void givenReviewsForUser_whenGetFilteredReviewsByUserId_thenReturnFilteredReviews() {
-
 
         UUID userId = UUID.randomUUID();
         UUID reviewId = UUID.randomUUID();
@@ -497,7 +438,6 @@ public class ReviewServiceUTest {
         when(reviewRepository.findAll((Specification<Review>) any(), eq(pageable)))
                 .thenReturn(reviewPage);
 
-
         Page<AdminReviewDto> result =
                 reviewService.getFilteredReviewsByUserId(
                         userId,
@@ -506,7 +446,6 @@ public class ReviewServiceUTest {
                         null,
                         pageable
                 );
-
 
         assertThat(result.getContent()).hasSize(1);
 
@@ -523,10 +462,8 @@ public class ReviewServiceUTest {
                 .findAll((Specification<Review>) any(), eq(pageable));
     }
 
-
     @Test
     void givenNoReviewsForUser_whenGetFilteredReviewsByUserId_thenReturnEmptyPage() {
-
 
         UUID userId = UUID.randomUUID();
 
@@ -541,7 +478,6 @@ public class ReviewServiceUTest {
         when(reviewRepository.findAll((Specification<Review>) any(), eq(pageable)))
                 .thenReturn(emptyPage);
 
-
         Page<AdminReviewDto> result =
                 reviewService.getFilteredReviewsByUserId(
                         userId,
@@ -550,7 +486,6 @@ public class ReviewServiceUTest {
                         null,
                         pageable
                 );
-
 
         assertThat(result.getContent()).isEmpty();
 
@@ -561,12 +496,8 @@ public class ReviewServiceUTest {
                 .findByReviewIdInAndIsDeletedFalse(any());
     }
 
-
-
-
     @Test
     void givenDeletedReview_whenRestoreReview_thenReviewBecomesActive() {
-
 
         UUID reviewId = UUID.randomUUID();
 
@@ -578,25 +509,20 @@ public class ReviewServiceUTest {
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.of(review));
 
-
         reviewService.restoreReview(reviewId);
-
 
         assertThat(review.isDeleted()).isFalse();
 
         verify(reviewRepository, times(1)).save(review);
     }
 
-
     @Test
     void givenMissingReview_whenRestoreReview_thenReviewNotFoundExceptionIsThrown() {
-
 
         UUID reviewId = UUID.randomUUID();
 
         when(reviewRepository.findById(reviewId))
                 .thenReturn(Optional.empty());
-
 
         assertThrows(
                 ReviewNotFoundException.class,

@@ -47,8 +47,6 @@ public class ReviewCommentITests {
     @Test
     void givenExistingReview_whenCreateComment_thenCommentIsLinkedToReview() {
 
-
-
         UUID movieId = UUID.randomUUID();
         UUID publisherId = UUID.randomUUID();
 
@@ -70,13 +68,10 @@ public class ReviewCommentITests {
                 .publisherUsername("Pesho")
                 .build();
 
-
-
         Comment comment = commentService.createComment(commentDto);
 
-
-
         assertThat(comment).isNotNull();
+
         assertThat(comment.getId()).isNotNull();
 
         assertThat(comment.getContent())
@@ -98,7 +93,6 @@ public class ReviewCommentITests {
     @Test
     void givenMissingReview_whenCreateComment_thenExceptionIsThrown() {
 
-
         UUID missingReviewId = UUID.randomUUID();
 
         CreateCommentDto commentDto = CreateCommentDto.builder()
@@ -108,16 +102,13 @@ public class ReviewCommentITests {
                 .publisherUsername("Pesho")
                 .build();
 
-
         assertThatThrownBy(() -> commentService.createComment(commentDto))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Review not found");
     }
 
-
     @Test
     void givenExistingReview_whenGetReviewById_thenReturnCorrectReview() {
-
 
         CreateReviewDto reviewDto = CreateReviewDto.builder()
                 .content("Great movie!")
@@ -130,9 +121,7 @@ public class ReviewCommentITests {
 
         Review createdReview = reviewService.createReview(reviewDto);
 
-
         Review result = reviewService.getReviewById(createdReview.getId());
-
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(createdReview.getId());
@@ -142,23 +131,18 @@ public class ReviewCommentITests {
         assertThat(result.getUserRating()).isEqualTo(10);
     }
 
-
     @Test
     void givenMissingReview_whenGetReviewById_thenExceptionIsThrown() {
 
-
         UUID missingReviewId = UUID.randomUUID();
-
 
         assertThatThrownBy(() -> reviewService.getReviewById(missingReviewId))
                 .isInstanceOf(ReviewNotFoundException.class)
                 .hasMessage("Review with id: " + missingReviewId + " not found");
     }
 
-
     @Test
     void givenExistingReview_whenUpdateReview_thenReviewDetailsAreUpdated() {
-
 
         CreateReviewDto createReviewDto = CreateReviewDto.builder()
                 .content("Good movie")
@@ -176,9 +160,7 @@ public class ReviewCommentITests {
                 .rating(10)
                 .build();
 
-
         reviewService.updateReview(review.getId(), editReviewDto);
-
 
         Review updatedReview = reviewService.getReviewById(review.getId());
 
@@ -193,7 +175,6 @@ public class ReviewCommentITests {
     @Test
     void givenExistingActiveReview_whenDeleteReviewAsUser_thenReviewIsMarkedAsDeleted() {
 
-
         CreateReviewDto reviewDto = CreateReviewDto.builder()
                 .content("Good movie")
                 .movieId(UUID.randomUUID())
@@ -205,9 +186,7 @@ public class ReviewCommentITests {
 
         Review review = reviewService.createReview(reviewDto);
 
-
         reviewService.deleteReview(review.getId(), false);
-
 
         Review deletedReview = reviewService.getReviewById(review.getId());
 
@@ -222,7 +201,6 @@ public class ReviewCommentITests {
     @Test
     void givenExistingActiveReview_whenDeleteReviewAsAdmin_thenReviewIsMarkedAsDeletedByAdministrator() {
 
-
         CreateReviewDto reviewDto = CreateReviewDto.builder()
                 .content("Good movie")
                 .movieId(UUID.randomUUID())
@@ -234,9 +212,7 @@ public class ReviewCommentITests {
 
         Review review = reviewService.createReview(reviewDto);
 
-
         reviewService.deleteReview(review.getId(), true);
-
 
         Review deletedReview = reviewService.getReviewById(review.getId());
 
@@ -247,10 +223,8 @@ public class ReviewCommentITests {
                 .isTrue();
     }
 
-
     @Test
     void givenAlreadyDeletedReview_whenDeleteReview_thenExceptionIsThrown() {
-
 
         CreateReviewDto reviewDto = CreateReviewDto.builder()
                 .content("Good movie")
@@ -264,7 +238,6 @@ public class ReviewCommentITests {
         Review review = reviewService.createReview(reviewDto);
 
         reviewService.deleteReview(review.getId(), false);
-
 
         assertThatThrownBy(() ->
                 reviewService.deleteReview(review.getId(), false))
@@ -276,7 +249,6 @@ public class ReviewCommentITests {
     @Test
     void givenDeletedReview_whenRestoreReview_thenReviewBecomesActive() {
 
-
         CreateReviewDto reviewDto = CreateReviewDto.builder()
                 .content("Good movie")
                 .movieId(UUID.randomUUID())
@@ -290,9 +262,7 @@ public class ReviewCommentITests {
 
         reviewService.deleteReview(review.getId(), false);
 
-
         reviewService.restoreReview(review.getId());
-
 
         Review restoredReview = reviewService.getReviewById(review.getId());
 
@@ -300,13 +270,10 @@ public class ReviewCommentITests {
                 .isFalse();
     }
 
-
     @Test
     void givenMissingReview_whenRestoreReview_thenExceptionIsThrown() {
 
-
         UUID missingReviewId = UUID.randomUUID();
-
 
         assertThatThrownBy(() ->
                 reviewService.restoreReview(missingReviewId))
@@ -314,10 +281,8 @@ public class ReviewCommentITests {
                 .hasMessage("Review with id: %s not found".formatted(missingReviewId));
     }
 
-
     @Test
     void givenExistingActiveComment_whenDeleteComment_thenCommentIsMarkedAsDeleted() {
-
 
         CreateReviewDto reviewDto = CreateReviewDto.builder()
                 .content("Amazing movie!")
@@ -343,18 +308,14 @@ public class ReviewCommentITests {
                 .commentId(comment.getId())
                 .build();
 
-
         commentService.deleteComment(deleteCommentDto);
-
 
         assertThat(comment.isDeleted())
                 .isTrue();
     }
 
-
     @Test
     void givenMissingComment_whenDeleteComment_thenExceptionIsThrown() {
-
 
         UUID missingCommentId = UUID.randomUUID();
 
@@ -362,17 +323,14 @@ public class ReviewCommentITests {
                 .commentId(missingCommentId)
                 .build();
 
-
         assertThatThrownBy(() ->
                 commentService.deleteComment(deleteCommentDto))
                 .isInstanceOf(CommentNotFoundException.class)
                 .hasMessage("Comment not found");
     }
 
-
     @Test
     void givenAlreadyDeletedComment_whenDeleteComment_thenExceptionIsThrown() {
-
 
         CreateReviewDto reviewDto = CreateReviewDto.builder()
                 .content("Amazing movie!")
@@ -400,17 +358,14 @@ public class ReviewCommentITests {
 
         commentService.deleteComment(deleteCommentDto);
 
-
         assertThatThrownBy(() ->
                 commentService.deleteComment(deleteCommentDto))
                 .isInstanceOf(CommentNotFoundException.class)
                 .hasMessage("Comment not found");
     }
 
-
     @Test
     void givenExistingActiveComments_whenGetAllCommentsByReviewId_thenReturnOnlyActiveComments() {
-
 
         CreateReviewDto reviewDto = CreateReviewDto.builder()
                 .content("I really enjoyed this movie because the story and characters were amazing!")
@@ -446,10 +401,8 @@ public class ReviewCommentITests {
 
         commentService.deleteComment(deleteCommentDto);
 
-
         var comments = commentService
                 .getAllCommentsByReviewIdAndIsDeletedFalse(review.getId());
-
 
         assertThat(comments)
                 .hasSize(1);
@@ -461,12 +414,8 @@ public class ReviewCommentITests {
                 .isFalse();
     }
 
-
-
-
     @Test
     void givenExistingReviewWithComments_whenGetAllActivesReviewsAndCommentsByMovieId_thenReturnReviewWithComments() {
-
 
         UUID movieId = UUID.randomUUID();
 
@@ -492,10 +441,8 @@ public class ReviewCommentITests {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-
         Page<ViewReviewsAndCommentsDto> result =
                 reviewService.getAllActivesReviewsAndCommentsByMovieId(movieId, pageable);
-
 
         assertThat(result).hasSize(1);
 
@@ -509,10 +456,8 @@ public class ReviewCommentITests {
                 .isEqualTo("I completely agree!");
     }
 
-
     @Test
     void givenReviewWithoutComments_whenGetAllActivesReviewsAndCommentsByMovieId_thenReturnReviewWithoutComments() {
-
 
         UUID movieId = UUID.randomUUID();
 
@@ -529,10 +474,8 @@ public class ReviewCommentITests {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-
         Page<ViewReviewsAndCommentsDto> result =
                 reviewService.getAllActivesReviewsAndCommentsByMovieId(movieId, pageable);
-
 
         assertThat(result).hasSize(1);
 
@@ -618,6 +561,7 @@ public class ReviewCommentITests {
         UUID userId = UUID.randomUUID();
 
         UUID firstMovieId = UUID.randomUUID();
+
         UUID secondMovieId = UUID.randomUUID();
 
         CreateReviewDto firstReviewDto = CreateReviewDto.builder()

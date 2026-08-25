@@ -33,9 +33,6 @@ class CommentRestControllerApiTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
-
-
     @Test
     void postRequestToCreateComment_happyPath_returnsCreated() throws Exception {
 
@@ -62,7 +59,6 @@ class CommentRestControllerApiTest {
         verify(commentService).createComment(any(CreateCommentDto.class));
     }
 
-
     @Test
     void postRequestToCreateComment_withoutRequestBody_returnsBadRequest()
             throws Exception {
@@ -78,7 +74,6 @@ class CommentRestControllerApiTest {
         verify(commentService, never())
                 .createComment(any(CreateCommentDto.class));
     }
-
 
     @Test
     void postRequestToCreateComment_withEmptyContent_returnsBadRequest()
@@ -107,7 +102,6 @@ class CommentRestControllerApiTest {
                 .createComment(any(CreateCommentDto.class));
     }
 
-
     @Test
     void postRequestToCreateComment_withNullContent_returnsBadRequest()
             throws Exception {
@@ -135,7 +129,6 @@ class CommentRestControllerApiTest {
                 .createComment(any(CreateCommentDto.class));
     }
 
-
     @Test
     void postRequestToCreateComment_withContentShorterThanFiveCharacters_returnsBadRequest()
             throws Exception {
@@ -159,7 +152,6 @@ class CommentRestControllerApiTest {
         verify(commentService, never())
                 .createComment(any(CreateCommentDto.class));
     }
-
 
     @Test
     void postRequestToCreateComment_withContentLongerThan300Characters_returnsBadRequest()
@@ -236,7 +228,6 @@ class CommentRestControllerApiTest {
                 .deleteComment(any(DeleteCommentDto.class));
     }
 
-
     @Test
     void postRequestToDeleteComment_withoutRequestBody_returnsBadRequest()
             throws Exception {
@@ -252,7 +243,6 @@ class CommentRestControllerApiTest {
         verify(commentService, never())
                 .deleteComment(any(DeleteCommentDto.class));
     }
-
 
     @Test
     void postRequestToDeleteComment_withoutReviewId_returnsBadRequest()
@@ -278,7 +268,6 @@ class CommentRestControllerApiTest {
                 .deleteComment(any(DeleteCommentDto.class));
     }
 
-
     @Test
     void postRequestToDeleteComment_withoutPublisherId_returnsBadRequest()
             throws Exception {
@@ -303,7 +292,6 @@ class CommentRestControllerApiTest {
                 .deleteComment(any(DeleteCommentDto.class));
     }
 
-
     @Test
     void postRequestToDeleteComment_withoutCommentId_returnsBadRequest()
             throws Exception {
@@ -327,7 +315,6 @@ class CommentRestControllerApiTest {
         verify(commentService, never())
                 .deleteComment(any(DeleteCommentDto.class));
     }
-
 
     @Test
     void postRequestToDeleteComment_withoutReason_returnsBadRequest()
