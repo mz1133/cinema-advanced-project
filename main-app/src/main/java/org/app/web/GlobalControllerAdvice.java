@@ -27,8 +27,8 @@ public class GlobalControllerAdvice {
         return "redirect:/login";
     }
 
-    @ExceptionHandler(AlreadyHavePlanException.class)
-    public String handleAlreadyHavePlanException(AlreadyHavePlanException e, RedirectAttributes redirectAttributes) {
+    @ExceptionHandler(UserAlreadyHasSubscriptionException.class)
+    public String handleAlreadyHavePlanException(UserAlreadyHasSubscriptionException e, RedirectAttributes redirectAttributes) {
 
         redirectAttributes.addFlashAttribute("error", e.getMessage());
 
@@ -44,12 +44,20 @@ public class GlobalControllerAdvice {
         return "redirect:/error";
     }
 
-    @ExceptionHandler(ChangeUserRoleException.class)
-    public String handleChangeUserRoleException(ChangeUserRoleException e, RedirectAttributes redirectAttributes) {
+    @ExceptionHandler(UnauthorizedRoleChangeException.class)
+    public String handleChangeUserRoleException(UnauthorizedRoleChangeException e, RedirectAttributes redirectAttributes) {
 
         redirectAttributes.addFlashAttribute("error", e.getMessage());
 
         return "redirect:/admin/users";
+    }
+
+    @ExceptionHandler(CardValidationException.class)
+    public String handleCardValidationException(CardValidationException e, RedirectAttributes redirectAttributes) {
+
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+
+        return "redirect:/subscriptions";
     }
 
     @ExceptionHandler(MovieNotFoundException.class)

@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+import java.security.Principal;
 import java.util.UUID;
 
 @Controller
@@ -37,7 +38,7 @@ public class MovieController {
     }
 
     @GetMapping("/new")
-    public ModelAndView getAddMoviePage(@SessionAttribute(name = "userId", required = false) UUID userId) {
+    public ModelAndView getAddMoviePage() {
 
         MovieOptionsDto movieOptionsDto = movieService.getMovieOptions();
 
@@ -50,7 +51,7 @@ public class MovieController {
     }
 
     @PostMapping("/new")
-    public ModelAndView addMovie(@SessionAttribute(name = "userId", required = false) UUID userId,
+    public ModelAndView addMovie(Principal principal,
                                  @Valid @ModelAttribute("movieDto") CreateMovieRequest createMovieRequest,
                                  BindingResult bindingResult,
                                  RedirectAttributes redirectAttributes) {
@@ -65,7 +66,7 @@ public class MovieController {
             return modelAndView;
         }
 
-        User user = userService.getUserById(userId);
+        User user = userService.getUserByUsernameOrEmail(principal.getName());
 
         movieService.addMovie(createMovieRequest, user.getUsername(), user.getRole());
 
@@ -88,14 +89,17 @@ public class MovieController {
         modelAndView.addObject("movie", movie);
         modelAndView.addObject("review", reviewsPage.getContent());
         modelAndView.addObject("currentPage", reviewsPage.getCurrentPage());
+        modelAndView.addObject("totalPages", reviewsPage.getTotalPages());
         modelAndView.addObject("pageSize", REVIEWS_PAGE_SIZE);
         modelAndView.addObject("totalReviews", reviewsPage.getTotalElements());
+        modelAndView.addObject("createReviewDto", new CreateReviewDto());
+        modelAndView.addObject("createCommentDto", new CreateReviewDto());
 
         return modelAndView;
     }
 
     @GetMapping("/actors")
-    public ModelAndView getAddActorPage(@SessionAttribute(name = "userId", required = false) UUID userId) {
+    public ModelAndView getAddActorPage() {
 
         ModelAndView modelAndView = new ModelAndView("add-actors");
         modelAndView.addObject("actor", new AddActorDto());
@@ -104,8 +108,7 @@ public class MovieController {
     }
 
     @PostMapping("/actors")
-    public ModelAndView addActor(@SessionAttribute(name = "userId", required = false) UUID userId,
-                                 @Valid @ModelAttribute("actor") AddActorDto addActorDto,
+    public ModelAndView addActor(@Valid @ModelAttribute("actor") AddActorDto addActorDto,
                                  BindingResult bindingResult,
                                  RedirectAttributes redirectAttributes) {
 
@@ -123,8 +126,7 @@ public class MovieController {
     }
 
     @GetMapping("/{id}/edit")
-    public ModelAndView getMovieEditPage(@SessionAttribute(name = "userId", required = false) UUID userId,
-                                         @PathVariable("id") UUID movieId,
+    public ModelAndView getMovieEditPage(@PathVariable("id") UUID movieId,
                                          RedirectAttributes redirectAttributes,
                                          @RequestParam(name = "source") String source) {
 
@@ -150,7 +152,7 @@ public class MovieController {
     }
 
     @PostMapping("/{id}/edit")
-    public ModelAndView editMovie(@SessionAttribute("userId") UUID userId,
+    public ModelAndView editMovie(Principal principal,
                                   @PathVariable(name = "id") UUID movieId,
                                   @Valid EditMovieDetails movieDetails, BindingResult bindingResult,
                                   RedirectAttributes redirectAttributes,
@@ -165,11 +167,12 @@ public class MovieController {
             return modelAndView;
         }
 
-        User user = userService.getUserById(userId);
+        User user = userService.getUserByUsernameOrEmail(principal.getName());
+        Role userRole = user.getRole();
 
         Movie movie = movieService.getMovie(movieId);
 
-        if (user.getRole() != Role.ADMIN && user.getRole() != Role.SUPER_ADMIN
+        if (userRole != Role.ADMIN && userRole != Role.SUPER_ADMIN
                 && !movie.getPublisher().getId().equals(user.getId())) {
 
             return new ModelAndView("redirect:/error");

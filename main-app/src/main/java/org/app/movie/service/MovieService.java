@@ -1,6 +1,7 @@
 package org.app.movie.service;
 
 
+
 import lombok.extern.slf4j.Slf4j;
 import org.app.actor.model.Actor;
 import org.app.actor.repository.ActorRepository;
@@ -11,13 +12,15 @@ import org.app.movie.model.Genre;
 import org.app.movie.model.Movie;
 import org.app.movie.repository.MovieRepository;
 import org.app.movie.specification.MovieSpecification;
-import org.app.reviewclient.ReviewClient;
+
 import org.app.user.model.Role;
 import org.app.user.model.User;
 import org.app.user.service.UserService;
 import org.app.web.dto.CreateMovieRequest;
 import org.app.web.dto.EditMovieDetails;
 import org.app.web.dto.MovieOptionsDto;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -56,6 +59,7 @@ public class MovieService {
 
     }
 
+    @CacheEvict(value = "movies", allEntries = true)
     public void addMovie(CreateMovieRequest createMovieRequest, String username, Role role) {
 
         User user = userService.getUserByUsername(username);
@@ -63,6 +67,8 @@ public class MovieService {
         Movie movie = buildMovie(createMovieRequest, role, user);
 
         saveMovie(movie);
+
+        log.info("Movie with id: { %s }, with name: {%s} has been added".formatted(movie.getId(), movie.getTitle()));
     }
 
     public Page<Movie> getMovieByKeyword(String keyword, Pageable pageable, String searchType) {
@@ -86,17 +92,21 @@ public class MovieService {
         return Page.empty(pageable);
     }
 
+    @Cacheable(value = "movies")
     public Page<Movie> getAllMoviesPageable(Pageable pageable) {
 
         return movieRepository.findAll(pageable);
     }
 
+    @CacheEvict(value = "movies", allEntries = true)
     public void deleteMovie(UUID movieToDeleteId) {
 
         Movie movie = getMovieById(movieToDeleteId, ERROR_MESSAGE_MOVIE_NOT_FOUND_TO_DELETE);
         movie.setDeleted(true);
 
         saveMovie(movie);
+
+        log.info("Movie with id: { %s }, has been deleted".formatted(movie.getId()));
     }
 
     public void restoreMovie(UUID movieToRestoreId) {
@@ -105,6 +115,8 @@ public class MovieService {
         movie.setDeleted(false);
 
         saveMovie(movie);
+
+        log.info("Movie with id: { %s }, has been restored".formatted(movie.getId()));
     }
 
     public Movie getMovieById(UUID movieId, String message) {
@@ -157,6 +169,8 @@ public class MovieService {
         Movie movieToEdit = buildEditMovie(editMovieDetails, movieId);
 
         saveMovie(movieToEdit);
+
+        log.info("Movie with id: { %s }, has been edited".formatted(movieToEdit.getId()));
     }
 
     public MovieOptionsDto getMovieOptions() {

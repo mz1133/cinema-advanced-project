@@ -1,5 +1,6 @@
 package org.app.actor.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.app.actor.model.Actor;
 import org.app.actor.repository.ActorRepository;
 import org.app.web.dto.ActorForm;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Slf4j
 @Service
 public class ActorService {
 
@@ -29,6 +30,8 @@ public class ActorService {
         Actor actor = buildActor(addActorDto);
 
         actorRepository.save(actor);
+
+        log.info(String.format("Actor with id: %s has been created successfully",  actor.getId()));
     }
 
     private Actor buildActor(AddActorDto addActorDto) {
@@ -39,6 +42,7 @@ public class ActorService {
                 .age(addActorDto.getAge())
                 .birthDate(addActorDto.getBirthDate())
                 .pictureUrl(addActorDto.getPictureUrl())
+                .biography(addActorDto.getBiography())
                 .createdOn(LOCAL_DATE_TIME_NOW)
                 .updatedOn(LOCAL_DATE_TIME_NOW)
                 .build();

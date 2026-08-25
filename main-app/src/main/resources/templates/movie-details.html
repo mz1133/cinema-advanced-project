@@ -1,13 +1,25 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="${'CineCatalog | ' + movie.title}">CineCatalog | Movie Details</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="/css/movie-details.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
 </head>
+
 <body>
+
+<header class="site-header public-header">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+        <nav class="top-nav auth-actions" aria-label="Register page navigation">
+            <a class="nav-link" th:href="@{/home}">Back to Home</a>
+        </nav>
+    </div>
+</header>
+
 
 
 <main>
@@ -69,7 +81,7 @@
                     </div>
                     <div class="meta-item">
                         <span class="label">Producer:</span>
-                        <!-- Итерираме през списъка с продуценти -->
+
                         <span class="value" th:text="${#strings.listJoin(movie.producers, ', ')}">Names</span>
                     </div>
                     <div class="meta-item">
@@ -96,6 +108,206 @@
         </div>
     </section>
 </main>
+
+<section class="container reviews-container" >
+    <div class="reviews-wrapper">
+
+
+        <div class="reviews-header">
+            <h2>Reviews & Comments</h2>
+            <span class="total-reviews-badge" th:text="${totalReviews + ' Reviews'}">0 Reviews</span>
+        </div>
+
+
+
+        <div class="review-form-card" th:if="${currentUser.canAddReviewAndComment}" >
+            <h3>Write a Review</h3>
+            <form th:action="@{/review/{movieId}(movieId=${movie.id})}" method="post" th:object="${createReviewDto}" class="review-form">
+
+                <div class="form-group">
+                       <span class="error-message"
+                             th:if="${#fields.hasErrors('userRating')}"
+                             th:errors="*{userRating}">
+                       </span>
+
+                    <small class="field-hint"
+                           th:unless="${#fields.hasErrors('userRating')}">
+                        Rating must be between 1 and 10.
+                    </small>
+
+                    <label for="userRating">Rating (1-10)</label>
+                    <input th:field="*{userRating}" type="number" id="userRating" name="userRating" min="1" max="10" required class="form-control-number" th:classappend="${#fields.hasErrors('userRating')} ? 'is-invalid' : ''" placeholder="10">
+                </div>
+
+                <div class="form-group">
+                    <span class="error-message"
+                     th:if="${#fields.hasErrors('content')}"
+                     th:errors="*{content}">
+                    </span>
+                    <small class="field-hint"
+                           th:unless="${#fields.hasErrors('content')}">
+                        Review text must be between 20 and 1000 characters.
+                    </small>
+                    <label for="content">Your Review</label>
+                    <textarea th:classappend="${#fields.hasErrors('content')} ? 'is-invalid' : ''"
+                              th:field="*{content}"
+                              id="content"
+                              name="content"
+                              rows="4"
+                              required
+                              class="form-control-textarea"
+                              placeholder="Share your thoughts about the movie..."></textarea>                </div>
+
+                <button type="submit" class="btn-submit-review">Publish Review</button>
+            </form>
+        </div>
+
+
+        <div class="no-subscription-banner" th:unless="${currentUser.canAddReviewAndComment}">
+            <p>🔒 You need an active subscription to write a review for this movie.</p>
+        </div>
+
+
+        <div class="reviews-list" th:if="${!review.isEmpty()}" id="reviews-list">
+            <div class="review-card" th:each="rev : ${review}">
+
+                <div class="review-meta-top">
+                    <span class="publisher-username" th:text="${'@' + rev.publisherUsername}">@username</span>
+                    <span class="review-rating" th:text="${'★ ' + rev.userRating + '/10'}">★ 9/10</span>
+                </div>
+
+                <p class="review-content" th:text="${rev.content}">Review content goes here...</p>
+
+                <div class="review-footer">
+                    <span class="review-date" th:text="${#temporals.format(rev.createdOn, 'dd MMM yyyy, HH:mm')}">17 Aug 2026</span>
+
+
+                    <button class="btn-toggle-comments" type="button"
+                            th:data-review-id="${rev.reviewId}"
+                            onclick="toggleComments(this.getAttribute('data-review-id'))">
+                        💬 Comments (<span th:text="${rev.comments.size()}">0</span>)
+                    </button>
+                </div>
+
+
+                <div class="comments-section" th:id="${'comments-' + rev.reviewId}" style="display: none;">
+
+                    <form th:action="@{/review/{reviewId}/comments(reviewId=${rev.reviewId}, movieId=${movie.id})}"
+                    method="post"
+                    th:object="${createCommentDto}"
+                    class="comment-form">
+
+
+                        <div class="form-group" style="width: 100%;">
+
+
+                            <small class="helper-text" th:unless="${#fields.hasErrors('content')}" style="display: block; margin-bottom: 5px; color: #6c757d;">
+                                Length must be between 5 and 300 characters.
+                            </small>
+
+                            <small class="error-text" th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="display: block; margin-bottom: 5px; color: #dc3545;">
+                                Error message here.
+                            </small>
+
+
+                            <div class="input-button-group" style="display: flex; align-items: stretch; gap: 10px; width: 100%;">
+
+            <textarea th:field="*{content}"
+                      placeholder="Write a comment..."
+                      class="comment-input"
+                      rows="3"
+                      style="flex-grow: 1; width: 100%; resize: none; padding: 10px; border-radius: 4px; border: 1px solid #444; background-color: #222; color: white;"
+                      th:classappend="${#fields.hasErrors('content')} ? 'is-invalid' : ''">
+            </textarea>
+
+                                <button type="submit" class="btn-comment-submit" style="white-space: nowrap; padding: 0 20px; border-radius: 4px; cursor: pointer;">Send</button>
+
+                            </div>
+                        </div>
+                    </form>
+
+
+                    <div class="comments-list">
+                        <div class="comment-item" th:each="comment : ${rev.comments}">
+                            <div class="comment-header">
+                                <span class="comment-user" th:text="${'@' + comment.publisherUsername}">@commenter</span>
+                                <span class="comment-date" th:text="${#temporals.format(comment.createdDate, 'dd MMM yyyy')}">17 Aug 2026</span>
+                            </div>
+                            <p class="comment-text" th:text="${comment.content}">Comment text...</p>
+                        </div>
+                        <p class="no-comments" th:if="${rev.comments.isEmpty()}">No comments yet. Be the first to comment!</p>
+                    </div>
+
+            </div>
+        </div>
+
+
+        <div class="no-reviews" th:if="${review.isEmpty()}">
+            <p>No reviews yet for this movie. Be the first to share your opinion!</p>
+        </div>
+
+
+        <div class="pagination-container" th:if="${totalPages > 1}">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/movies/details/{id}(id=${movie.id}, page=${currentPage - 1})}"
+               class="page-btn">← Previous</a>
+
+            <span class="page-info" th:text="${'Page ' + (currentPage + 1) + ' of ' + totalPages}">Page 1 of 5</span>
+
+            <a th:if="${currentPage < totalPages - 1}"
+               th:href="@{/movies/details/{id}(id=${movie.id}, page=${currentPage + 1})}"
+               class="page-btn">Next →</a>
+        </div>
+
+    </div>
+    </div>
+</section>
+
+
+<script>
+
+    function toggleComments(reviewId) {
+        const section = document.getElementById('comments-' + reviewId);
+        if (section.style.display === 'none' || section.style.display === '') {
+            section.style.display = 'block';
+        } else {
+            section.style.display = 'none';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const errorInput = document.querySelector('.is-invalid');
+        if (errorInput) {
+            const commentsSection = errorInput.closest('[id^="comments-"]');
+            if (commentsSection) {
+                commentsSection.style.display = 'block';
+            }
+            errorInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+
+        const hash = window.location.hash;
+        if (hash) {
+
+            if (hash.startsWith('#comments-')) {
+                const commentsSection = document.querySelector(hash);
+                if (commentsSection) {
+                    commentsSection.style.display = 'block';
+                }
+            }
+
+
+            const targetElement = document.querySelector(hash);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+
+        }
+    });
+</script>
 <div th:replace="~{fragments/footer :: app-footer-minimal}"></div>
 
 </body>

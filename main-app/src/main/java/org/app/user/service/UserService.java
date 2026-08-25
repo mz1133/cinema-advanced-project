@@ -1,9 +1,11 @@
 package org.app.user.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.app.exception.ChangeUserRoleException;
+import org.app.exception.UnauthorizedRoleChangeException;
 import org.app.exception.UserNotFoundException;
 import org.app.exception.ValidationFailedException;
+import org.app.notification.service.NotificationService;
+import org.app.security.AuthenticationMetadata;
 import org.app.subscription.model.Subscription;
 import org.app.user.model.User;
 import org.app.user.model.Role;
@@ -12,7 +14,9 @@ import org.app.web.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.NonNull;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +25,7 @@ import java.util.*;
 
 @Slf4j
 @Service
-public class UserService {
+public class UserService  implements UserDetailsService {
 
     private final static LocalDateTime LOCAL_DATE_TIME_NOW = LocalDateTime.now();
     private final static String ERROR_MESSAGE_USER_ALREADY_EXISTS = "User already exists";
@@ -36,14 +40,18 @@ public class UserService {
     private final static String ERROR_MESSAGE_CANNOT_CHANGE_ROLE = "You are not allowed to assign this role.";
     private final static String ERROR_MESSAGE_CANNOT_CHANGE_ACTIVE_STATUS = "You are not allowed to assign this active.";
     private final static String ERROR_MESSAGE_USER_NOT_FOUND = "User not found";
+    private final static String WELCOME_MESSAGE = "Welcome %s to CineSpectrum! We are glad to have you here.";
+    private static final String TYPE_WELCOME_NOTIFICATION_TEXT = "WELCOME";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationService notificationService;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, NotificationService notificationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.notificationService = notificationService;
     }
 
     public void register(RegisterRequest registerRequest) {
@@ -71,23 +79,20 @@ public class UserService {
         user.setPictureUrl(DEFAULT_PICTURE_URL);
 
         saveUser(user);
+
+        notificationService.createNotification(
+                user,
+                WELCOME_MESSAGE.formatted(registerRequest.getUsername()),
+                TYPE_WELCOME_NOTIFICATION_TEXT
+        );
+
+        log.info("User username:{%s}, id:{%s} has been successfully registered".formatted(user.getId(), user.getUsername()));
     }
 
-    public User login(LoginRequest loginRequest) {
 
-        User user = findUserByUsernameOrEmail(loginRequest);
+    public void updateUserProfile(String usernameOrPassword, UpdateProfileRequest request) {
 
-        String hashedPassword = user.getPassword();
-        String rawPassword = loginRequest.getPassword();
-
-        isPasswordMatch(hashedPassword, rawPassword);
-
-        return user;
-    }
-
-    public void updateUserProfile(UUID id, UpdateProfileRequest request) {
-
-        User user = getUserById(id);
+        User user = getUserByUsernameOrEmail(usernameOrPassword);
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -97,6 +102,8 @@ public class UserService {
         user.setUpDateOn(LOCAL_DATE_TIME_NOW);
 
         saveUser(user);
+
+        log.info("user:{%s} has been successfully updated profile".formatted(user.getUsername()));
     }
 
     public User getUserById(UUID id) {
@@ -105,6 +112,8 @@ public class UserService {
                 .findById(id)
                 .orElseThrow(() -> new UserNotFoundException(ERROR_MESSAGE_USER_NOT_FOUD));
     }
+
+
 
     public boolean isCanAddMovie(UUID id) {
 
@@ -144,10 +153,10 @@ public class UserService {
         }
     }
 
-    public void changeUserRole(UUID adminId, Role roleToChange, UUID userToChangeRoleId) {
+    public void changeUserRole(String usernameOrEmail, Role roleToChange, UUID id) {
 
-        User userToChange = getUserById(userToChangeRoleId);
-        User admin = getUserById(adminId);
+        User userToChange = getUserById(id);
+        User admin = getUserByUsernameOrEmail(usernameOrEmail);
 
         String currentRole = userToChange.getRole().toString();
 
@@ -168,11 +177,11 @@ public class UserService {
 
     }
 
-    public void changeUserActivationStatus(UUID adminId, UUID userToChangeActive) {
+    public void changeUserActivationStatus(String adminUsernameOrEmail, UUID id) {
 
-        User adminUser = getUserById(adminId);
+        User adminUser = getUserByUsernameOrEmail(adminUsernameOrEmail);
 
-        User currentUser = getUserById(userToChangeActive);
+        User currentUser = getUserById(id);
 
         hasPermissionToChangeUserActivity(adminUser, currentUser);
 
@@ -183,6 +192,8 @@ public class UserService {
         saveUser(currentUser);
 
         loggedInSystemsToChangeUserActivity(currentUser, currentUserStatus);
+
+
     }
 
     private void saveUser(User currentUser) {
@@ -223,13 +234,13 @@ public class UserService {
 
         if (adminUser.getRole() != Role.ADMIN && adminUser.getRole() != Role.SUPER_ADMIN) {
 
-            throw new ChangeUserRoleException(ERROR_MESSAGE_CANNOT_CHANGE_ACTIVE_STATUS);
+            throw new UnauthorizedRoleChangeException(ERROR_MESSAGE_CANNOT_CHANGE_ACTIVE_STATUS);
         }
 
         if (currentUser.getRole() == Role.SUPER_ADMIN || (currentUser.getRole() == Role.ADMIN
                 && adminUser.getRole() == Role.ADMIN)) {
 
-            throw new ChangeUserRoleException(ERROR_MESSAGE_CANNOT_CHANGE_ACTIVE_STATUS);
+            throw new UnauthorizedRoleChangeException(ERROR_MESSAGE_CANNOT_CHANGE_ACTIVE_STATUS);
         }
     }
 
@@ -238,11 +249,11 @@ public class UserService {
         if (roleToChange == Role.SUPER_ADMIN || admin.getRole() == Role.USER
                 || userToChange.getRole() == Role.SUPER_ADMIN) {
 
-            throw new ChangeUserRoleException(ERROR_MESSAGE_CANNOT_CHANGE_ROLE);
+            throw new UnauthorizedRoleChangeException(ERROR_MESSAGE_CANNOT_CHANGE_ROLE);
         }
 
         if (admin.getRole() == Role.ADMIN && roleToChange == Role.ADMIN) {
-            throw new ChangeUserRoleException(ERROR_MESSAGE_CANNOT_CHANGE_ROLE);
+            throw new UnauthorizedRoleChangeException(ERROR_MESSAGE_CANNOT_CHANGE_ROLE);
 
         }
     }
@@ -261,6 +272,8 @@ public class UserService {
 
     private static void changeUserActivity(User currentUser) {
         currentUser.setActive(!currentUser.isActive());
+
+        loggedInSystemsToChangeUserActivity(currentUser, currentUser.isActive());
     }
 
     private static void loggedInSystemsToChangeUserActivity(User currentUser, boolean currentUserStatus) {
@@ -303,21 +316,6 @@ public class UserService {
         }
     }
 
-    @NonNull
-    private User findUserByUsernameOrEmail(LoginRequest loginRequest) {
-
-        return userRepository.findByUsernameOrEmail(
-                        loginRequest.getUsernameOrEmail(),
-                        loginRequest.getUsernameOrEmail())
-                .orElseThrow(() -> new UserNotFoundException(ERROR_MESSAGE_INVALID_USERNAME_MAIL_OR_PASSWORD));
-    }
-
-    private void isPasswordMatch(String hashPassword, String rawPassword) {
-
-        if (!passwordEncoder.matches(rawPassword, hashPassword)) {
-            throw new UserNotFoundException(ERROR_MESSAGE_INVALID_USERNAME_MAIL_OR_PASSWORD);
-        }
-    }
 
     private static boolean isUserAdmin(User user) {
         return user.getRole() == Role.ADMIN || user.getRole() == Role.SUPER_ADMIN;
@@ -331,8 +329,12 @@ public class UserService {
 
     public UserHeaderDto getUserHeaderDto(UUID uuid) {
 
+
+
         User user = userRepository.findById(uuid)
                 .orElseThrow(() -> new UserNotFoundException(ERROR_MESSAGE_USER_NOT_FOUND));
+
+
 
         return UserHeaderDto.builder()
                 .id(user.getId())
@@ -342,7 +344,56 @@ public class UserService {
                 .role(user.getRole())
                 .createdOn(user.getCreatedOn())
                 .subscription(user.getSubscription())
+                .isCanAddReviewAndComment(isCanAddReviewAndComment(uuid))
                 .build();
+    }
+
+    public boolean isCanAddReviewAndComment(UUID uuid) {
+
+        User user = getUserById(uuid);
+
+        if (!hasSubscription(user.getSubscription())) {
+            return false;
+        }
+
+        return user
+                .getSubscription()
+                .getExpirationDate()
+                .isAfter(LOCAL_DATE_TIME_NOW);
+
+
+    }
+
+
+    public User getUserByUsernameOrEmail(String usernameOrEmail) {
+
+        return userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new UserNotFoundException(ERROR_MESSAGE_USER_NOT_FOUND));
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+
+        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException(ERROR_MESSAGE_USER_NOT_FOUND));
+
+
+        return new AuthenticationMetadata(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getRole(),
+                user.isActive()
+        );
+    }
+
+    public boolean isAdmin(User admin) {
+
+        return admin.getRole() == Role.ADMIN || admin.getRole() == Role.SUPER_ADMIN;
+    }
+
+    public List<User> getUsersBySubscriptionExpirationDate(LocalDateTime startOfDay, LocalDateTime endOfDay) {
+        return userRepository.findBySubscriptionExpirationDateBetween(startOfDay, endOfDay);
     }
 }
 

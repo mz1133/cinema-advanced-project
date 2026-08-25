@@ -1,12 +1,15 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>CineCatalog | Subscription</title>
     <link rel="stylesheet" href="/css/styles.css"/>
     <link rel="stylesheet" href="/css/subscriptions.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <style>
 
+    </style>
 </head>
 <body>
 <header class="site-header">
@@ -17,6 +20,7 @@
 
         <nav class="top-nav" aria-label="Main navigation">
             <div class="user-profile-widget" style="display: flex; align-items: center; gap: 15px;">
+                <div th:replace="~{fragments/notification-bell :: notification-bell}"></div>
                 <img th:src="${currentUser.pictureUrl}" alt="Profile" class="user-avatar"
                      style="width: 40px; height: 40px; border-radius: 50%;"/>
                 <span th:text="${currentUser.username}" class="username">Username</span>
@@ -42,16 +46,16 @@
             <li>⭐ <strong>Recognition:</strong> Movies you add will display your username (Posted by).</li>
             <li>🚀 <strong>Future Perks:</strong> Get early access to all upcoming premium features.</li>
         </ul>
-        <p class="success-message" th:if="${successMessage}" th:text="${successMessage}" >.</p>
-        <p class="error-message" th:if="${error}" th:text="${error}" >.</p>
+        <p class="success-message" th:if="${successMessage}" th:text="${successMessage}"></p>
+        <p class="error-message" th:if="${error}" th:text="${error}"></p>
     </section>
 
-    <section class="subscription-grid" >
+    <section class="subscription-grid">
         <article class="subscription-card" th:each="plan : ${plans}">
             <div>
-                <h2 th:text="${plan != null} ? ${plan.getCode()} : '---'"  class="card-title">Plan Name</h2>
+                <h2 th:text="${plan != null} ? ${plan.getCode()} : '---'" class="card-title">Plan Name</h2>
                 <div th:text="${plan != null} ? ${plan.getPeriod() + ' Days'} : '---'" class="card-duration">1 Days</div>
-                <div th:text="${plan != null} ? ${'$ ' + plan.getPrice()} : '---'" class="card-price" >$9.99</div>
+                <div th:text="${plan != null} ? ${'$ ' + plan.getPrice()} : '---'" class="card-price">$9.99</div>
             </div>
 
             <button type="button" class="btn btn-primary"
@@ -62,23 +66,34 @@
         </article>
     </section>
 
-    <div id="paymentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
-        <div style="background:#1a1a1a; padding:30px; border-radius:10px; width:300px; color:white;">
-            <h3>Pay with Card</h3>
-            <form id="paymentForm" th:action="@{/home/subscriptions/purchase}" th:method="post" >
-                <input type="hidden" id="modalPlanCode" name="planCode">
+    <div id="paymentModal" th:style="${(#fields.hasErrors('${purchaseSubscriptionDto.*}')) or (error != null)} ? 'display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;' : 'display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;'">
+        <div style="background:#1a1a1a; padding:25px 30px; border-radius:10px; width:100%; max-width:440px; color:white; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+            <h3 style="margin-top:0; margin-bottom:15px;">Pay with Card</h3>
 
-                <label>
-                    <input type="text" name="cardNumber" placeholder="Card Number" required style="width:100%; margin:10px 0; padding:10px;"/>
-                </label>
-                <label>
-                    <input type="text" name="expiry" placeholder="Expiry (MM/YY)" required style="width:100%; margin:10px 0; padding:10px;"/>
-                </label>
-                <label>
-                    <input type="text" name="cvv" placeholder="CVV" required style="width:100%; margin:10px 0; padding:10px;"/>
-                </label>
+            <div th:if="${error}" style="background-color: rgba(255, 107, 107, 0.2); border: 1px solid #ff6b6b; color: #ff6b6b; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 15px; text-align: center;" th:text="${error}"></div>
 
-                <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:10px;">
+            <form id="paymentForm" th:action="@{/home/subscriptions/purchase}" th:method="post" th:object="${purchaseSubscriptionDto}">
+                <input type="hidden" id="modalPlanCode" th:field="*{planCode}">
+
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size: 0.85rem; margin-bottom: 4px;">Card Number</label>
+                    <input type="text" th:field="*{cardNumber}" placeholder="16 digits" maxlength="16" style="width:100%; padding:9px; border-radius:5px; border:1px solid #444; background:#262626; color:white; box-sizing:border-box;"/>
+                    <span th:if="${#fields.hasErrors('cardNumber')}" th:errors="*{cardNumber}" style="color: #ff6b6b; font-size: 0.75rem; margin-top: 3px; display: block;"></span>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size: 0.85rem; margin-bottom: 4px;">Expiry (MM/YY)</label>
+                    <input type="text" th:field="*{expiry}" placeholder="12/28" maxlength="5" style="width:100%; padding:9px; border-radius:5px; border:1px solid #444; background:#262626; color:white; box-sizing:border-box;"/>
+                    <span th:if="${#fields.hasErrors('expiry')}" th:errors="*{expiry}" style="color: #ff6b6b; font-size: 0.75rem; margin-top: 3px; display: block;"></span>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; font-size: 0.85rem; margin-bottom: 4px;">CVV</label>
+                    <input type="text" th:field="*{cvv}" placeholder="123" maxlength="4" style="width:100%; padding:9px; border-radius:5px; border:1px solid #444; background:#262626; color:white; box-sizing:border-box;"/>
+                    <span th:if="${#fields.hasErrors('cvv')}" th:errors="*{cvv}" style="color: #ff6b6b; font-size: 0.75rem; margin-top: 3px; display: block;"></span>
+                </div>
+
+                <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
                     <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Pay Now</button>
                 </div>
@@ -86,24 +101,19 @@
         </div>
     </div>
 
+
 </main>
 
-<script>
+<script th:inline="javascript">
     function openPaymentModal(planCode) {
-
         document.getElementById('modalPlanCode').value = planCode;
         document.getElementById('paymentModal').style.display = 'flex';
     }
 
     function closeModal() {
-
         document.getElementById('paymentModal').style.display = 'none';
-        document.getElementById('paymentForm').reset();
     }
 </script>
 
-
 </body>
-
-
 </html>

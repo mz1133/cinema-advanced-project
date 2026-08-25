@@ -30,4 +30,6 @@ public class UserHeaderDto {
 
     private Subscription subscription;
 
+    private boolean isCanAddReviewAndComment;
+
 }

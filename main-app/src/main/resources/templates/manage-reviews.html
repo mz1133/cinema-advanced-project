@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineSpectrum | Manage Reviews</title>
+
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/home.css"/>
+    <link rel="stylesheet" href="/css/subscriptions.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+
+    <style>
+        dialog {
+            background: #0d1322;
+            color: #fff;
+            border: 1px solid #4a5677;
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .close-dialog-btn {
+            background: #4a5677;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .comments-row {
+            background-color: #151d30;
+        }
+
+        .inner-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            background: #0d1322;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #4a5677;
+        }
+
+        .inner-table th,
+        .inner-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #2a344d;
+            font-size: 0.9em;
+        }
+
+        .inner-table th {
+            background-color: #1a233a;
+        }
+    </style>
+</head>
+
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+
+<header class="site-header user-header"
+        style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+
+        <div class="user-profile-widget">
+            <div th:replace="~{fragments/notification-bell :: notification-bell}"></div>
+            <img th:src="${currentUser.pictureUrl}"
+                 alt="Profile Picture"
+                 class="user-avatar"/>
+
+            <div class="user-meta-info">
+                <span th:text="${currentUser.username}"
+                      class="username">
+                    Admin
+                </span>
+            </div>
+
+            <form th:action="@{/logout}"
+                  method="post"
+                  class="m-0">
+                <button type="submit"
+                        class="btn btn-secondary btn-sm">
+                    Logout
+                </button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard-wrapper"
+     style="margin-top: 80px; display: flex; flex: 1;">
+
+    <div th:replace="~{fragments/sidebar :: user-sidebar}"></div>
+
+    <main class="main-content section"
+          style="flex: 1; padding: 2rem;">
+
+        <div class="filters"
+             style="padding: 1.5rem;">
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                <a th:href="@{/admin/reviews}"
+                   class="btn btn-primary">
+                    Reviews
+                </a>
+
+                <a th:href="@{/admin/comments}"
+                   class="btn btn-secondary">
+                    Comments
+                </a>
+            </div>
+
+            <h2 style="margin-bottom: 1.5rem; color: #fff;">
+                Manage Reviews
+            </h2>
+
+
+
+            <div th:if="${#fields.hasErrors('deleteCommentDto.*')}"
+                 style="background-color: rgba(220, 53, 69, 0.1); border: 1px solid #dc3545; color: #dc3545; padding: 1rem; border-radius: 5px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <i class="fas fa-exclamation-triangle" style="margin-right: 10px;"></i>
+                    <strong th:text="${#fields.errors('deleteCommentDto.*')[0]}">Comment Error Message</strong>
+                </div>
+                <button onclick="this.parentElement.style.display='none'" style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1.2rem; padding: 0;">&times;</button>
+            </div>
+            <div th:if="${#fields.hasErrors('reviewDeleteNotification.*')}"
+                 style="background-color: rgba(220, 53, 69, 0.1); border: 1px solid #dc3545; color: #dc3545; padding: 1rem; border-radius: 5px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <i class="fas fa-exclamation-triangle" style="margin-right: 10px;"></i>
+                    <strong th:text="${#fields.errors('reviewDeleteNotification.*')[0]}">Validation Error</strong>
+                </div>
+                <button onclick="this.parentElement.style.display='none'" style="background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1.2rem; padding: 0;">&times;</button>
+            </div>
+            <div th:if="${success}"
+                 style="background-color: rgba(25, 135, 84, 0.1); border: 1px solid #198754; color: #198754; padding: 1rem; border-radius: 5px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <i class="fas fa-check-circle" style="margin-right: 10px;"></i>
+                    <strong th:text="${success}">Success Message</strong>
+                </div>
+                <button onclick="this.parentElement.style.display='none'" style="background: none; border: none; color: #198754; cursor: pointer; font-size: 1.2rem; padding: 0;">&times;</button>
+            </div>
+
+
+            <form th:action="@{/admin/reviews}" method="get">
+                <div class="filters"
+                     style="margin-bottom: 1.5rem;
+                padding: 1rem;
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+                flex-wrap: wrap;">
+
+                    <div style="flex: 1; min-width: 180px;">
+                        <input name="keyword" type="text" th:value="${keyword}" placeholder="Search content..." style="padding: 0.65rem;
+                          width: 100%;
+                          background: #0d1322;
+                          border: 1px solid #4a5677;
+                          border-radius: 10px;
+                          color: #fff;"/>
+                    </div>
+
+
+                    <div style="flex: 1; min-width: 180px;">
+                        <input name="movieTitle" type="text" th:value="${movieTitle}" placeholder="Movie title..."
+                               style="padding: 0.65rem;
+                          width: 100%;
+                          background: #0d1322;
+                          border: 1px solid #4a5677;
+                          border-radius: 10px;
+                          color: #fff;"/>
+                    </div>
+
+                    <div style="flex: 1; min-width: 180px;">
+                        <input name="publisherUsername" type="text" th:value="${publisherUsername}" placeholder="Username..." style="padding: 0.65rem;
+                          width: 100%;
+                          background: #0d1322;
+                          border: 1px solid #4a5677;
+                          border-radius: 10px;
+                          color: #fff;"/>
+                    </div>
+
+                    <div style="flex: 1; min-width: 180px;">
+                        <input name="movieId" type="text" th:value="${movieId}" placeholder="Movie ID (UUID)..." style="padding: 0.65rem;
+                          width: 100%;
+                          background: #0d1322;
+                          border: 1px solid #4a5677;
+                          border-radius: 10px;
+                          color: #fff;"/>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit" class="btn btn-primary" style="padding: 0.65rem 1.5rem;">Search
+                        </button>
+
+                        <a th:href="@{/admin/reviews}" class="btn btn-secondary" style="padding: 0.65rem 1.5rem;
+                      text-decoration: none;
+                      display: inline-flex;
+                      align-items: center;">Clear</a>
+                    </div>
+                </div>
+            </form>
+
+            <table style="width: 100%;
+                          border-collapse: collapse;
+                          margin-top: 1rem;
+                          color: var(--text);">
+
+                <thead>
+                <tr style="border-bottom: 2px solid var(--border);
+                           text-align: left;">
+
+                    <th style="padding: 1rem;">
+                        Review
+                    </th>
+
+                    <th style="padding: 1rem;">
+                        Publisher
+                    </th>
+
+                    <th style="padding: 1rem;">
+                        Rating
+                    </th>
+
+                    <th style="padding: 1rem;">
+                        Date
+                    </th>
+
+                    <th style="padding: 1rem;">
+                        Content
+                    </th>
+
+                    <th style="padding: 1rem;">
+                        Status
+                    </th>
+
+                    <th style="padding: 1rem; text-align: center;">
+                        Actions
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+
+                <th:block th:each="review : ${pageData.content}">
+
+                    <tr style="border-bottom: 1px solid var(--border);">
+
+
+                        <td style="padding: 1rem;">
+                            <div>
+                                <strong>Review-Id:</strong>
+                                <span th:text="${review.reviewId}">1</span>
+                            </div>
+
+                            <div>
+                                <strong>Movie-Id:</strong>
+                                <span th:text="${review.movieId}">1</span>
+                            </div>
+                            <div>
+                                <strong>Movie-Name:</strong>
+                                <span th:text="${review.movieTitle}">1</span>
+                            </div>
+                        </td>
+
+
+                        <td style="padding: 1rem;">
+                            <strong th:text="${review.publisherUsername}">Username</strong>
+                        </td>
+
+
+                        <td style="padding: 1rem;">
+                            <strong th:text="${review.rating}">9</strong>/10
+                        </td>
+
+
+                        <td style="padding: 1rem;" th:text="${#temporals.format(review.createdOn, 'dd MMM yyyy HH:mm')}">20 Aug 2026
+                        </td>
+
+
+                        <td style="padding: 1rem;">
+                            <button type="button" class="btn btn-secondary btn-sm" th:onclick="openContentModal([[${review.content}]])">View</button>
+                        </td>
+
+
+                        <td style="padding: 1rem; text-align: center;">
+                            <span th:if="${review.deleted}"
+                                  style="color: #dc3545; font-weight: bold;">
+                                Deleted
+                            </span>
+
+                            <span th:unless="${review.deleted}"
+                                  style="color: #198754; font-weight: bold;">
+                                Active
+                            </span>
+                        </td>
+
+
+                        <td style="padding: 1rem;
+                                   text-align: center;
+                                   display: flex;
+                                   gap: 5px;
+                                   justify-content: center;">
+
+
+                            <button type="button"
+                                    class="btn btn-secondary btn-sm"
+                                    style="background: #4a5677; border: none;"
+                                    th:attr="data-review-id=${review.reviewId}"
+                                    onclick="toggleCommentsRow(this.dataset.reviewId)">
+                                💬 Comments
+                                (<span th:text="${review.comments != null ? review.comments.size() : 0}">
+                                    0
+                                </span>)
+                            </button>
+
+
+                            <button type="button"
+                                    class="btn btn-primary btn-sm"
+                                    style="background: #b90512; border-color: #b90512;"
+                                    th:attr="data-review-id=${review.reviewId},
+                 data-publisher-id=${review.publisherId}"
+                                    onclick="openDeleteModal(this.dataset.reviewId, this.dataset.publisherId)">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+
+
+                    <tr th:id="'comments-row-' + ${review.reviewId}"
+                        class="comments-row"
+                        style="display: none;">
+
+                        <td colspan="7"
+                            style="padding: 1rem 2rem;">
+
+                            <table class="inner-table">
+
+                                <thead>
+                                <tr style="text-align: left; border-bottom: 1px solid #2a344d;">
+                                    <th style="padding: 0.75rem;">Comment ID</th>
+                                    <th style="padding: 0.75rem;">Publisher</th>
+                                    <th style="padding: 0.75rem;">Content</th>
+                                    <th style="padding: 0.75rem; text-align: center;">Status</th>
+                                    <th style="padding: 0.75rem; text-align: center;">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="comment : ${review?.comments}" style="border-bottom: 1px solid #2a344d;">
+
+                                    <td style="padding: 0.75rem;" th:text="${comment?.commentId}">Comment ID</td>
+
+                                    <td style="padding: 0.75rem;" th:text="${comment?.publisherUsername}">Username</td>
+
+                                    <td style="padding: 0.75rem;">
+                                        <button type="button"
+                                                class="btn btn-secondary btn-sm"
+                                                style="padding: 0.2rem 0.5rem; font-size: 0.8em;"
+                                                th:data-content="${comment?.content}"
+                                                onclick="openContentModal(this.getAttribute('data-content'))">
+                                            Read
+                                        </button>
+                                    </td>
+
+                                    <td style="padding: 0.75rem; text-align: center;">
+            <span th:if="${comment?.deleted}" style="color: #dc3545; font-weight: bold; font-size: 0.85em;">
+                Deleted
+            </span>
+                                        <span th:unless="${comment?.deleted}" style="color: #198754; font-weight: bold; font-size: 0.85em;">
+                Active
+            </span>
+                                    </td>
+
+                                    <td style="text-align: center; display: flex; gap: 5px; justify-content: center;">
+
+                                        <button type="button"
+                                                class="btn btn-primary btn-sm"
+                                                style="background: #b90512; border-color: #b90512; padding: 0.2rem 0.5rem; font-size: 0.8em;"
+                                                th:onclick="openCommentDeleteModal([[${comment.commentId}]], [[${comment.publisherId}]], [[${review.reviewId}]])">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+
+
+                                <tr th:if="${review.comments == null || review.comments.isEmpty()}">
+                                    <td colspan="4"
+                                        style="text-align: center;
+                                               color: var(--muted);
+                                               padding: 0.5rem;">
+                                        No comments for this review.
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                </th:block>
+
+                </tbody>
+            </table>
+
+            <div class="pagination"
+                 th:if="${pageData != null and pageData.totalPages > 1}">
+
+                <a th:if="${pageData.currentPage > 0}"
+                   th:href="@{/admin/reviews(
+           page=${pageData.currentPage - 1},
+           size=${pageSize},
+           keyword=${keyword},
+           movieTitle=${movieTitle},
+           movieId=${movieId}
+       )}"
+                   class="page-link">
+                    &laquo;
+                </a>
+
+                <a th:each="pageNumber : ${#numbers.sequence(0, pageData.totalPages - 1)}"
+                   th:href="@{/admin/reviews(
+           page=${pageNumber},
+           size=${pageSize},
+           keyword=${keyword},
+           movieTitle=${movieTitle},
+           movieId=${movieId}
+       )}"
+                   th:text="${pageNumber + 1}"
+                   th:classappend="${pageNumber == pageData.currentPage} ? 'active' : ''"
+                   class="page-link">
+                    1
+                </a>
+
+                <a th:if="${pageData.currentPage < pageData.totalPages - 1}"
+                   th:href="@{/admin/reviews(
+           page=${pageData.currentPage + 1},
+           size=${pageSize},
+           keyword=${keyword},
+           movieTitle=${movieTitle},
+           movieId=${movieId}
+       )}"
+                   class="page-link">
+                    &raquo;
+                </a>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+
+<dialog id="contentModal">
+    <h3 style="margin-top: 0;">
+        Content Details
+    </h3>
+    <p id="modalReviewText"
+       style="line-height: 1.5;
+              margin-bottom: 1.5rem;">
+    </p>
+    <button class="close-dialog-btn"
+            onclick="document.getElementById('contentModal').close()">
+        Close
+    </button>
+</dialog>
+
+
+<dialog id="deleteModal">
+    <form id="deleteForm" method="post">
+
+        <input type="hidden"
+               th:name="${_csrf.parameterName}"
+               th:value="${_csrf.token}"/>
+
+        <input type="hidden"
+               name="reviewId"
+               id="modalReviewId">
+
+        <input type="hidden"
+               name="publisherId"
+               id="modalPublisherId">
+
+        <h3 style="margin-top: 0; color: #dc3545;">Delete Review</h3>
+
+        <p style="margin-bottom: 1rem; color: var(--text);">
+            Please provide a reason for deleting this review:
+        </p>
+
+        <textarea name="reason"
+                  rows="4"
+                  required
+                  placeholder="Enter deletion reason..."
+                  style="width: 100%; background: #0d1322; border: 1px solid #4a5677; border-radius: 5px; color: #fff; padding: 0.5rem; margin-bottom: 1rem;">
+        </textarea>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="button"
+                    class="btn btn-secondary"
+                    onclick="document.getElementById('deleteModal').close()">
+                Cancel
+            </button>
+
+            <button type="submit"
+                    class="btn btn-primary"
+                    style="background: #b90512; border-color: #b90512;">
+                Confirm Delete
+            </button>
+        </div>
+    </form>
+</dialog>
+<dialog id="commentDeleteModal">
+    <form id="commentDeleteForm" method="post" th:object="${deleteCommentDto}">
+        <h3 style="margin-top: 0; color: #dc3545;">Delete Comment</h3>
+        <p style="margin-bottom: 1rem; color: var(--text);">Please provide a reason for deleting this comment:</p>
+
+        <textarea th:field="*{reason}" rows="4" required placeholder="Enter deletion reason..." style="width: 100%; background: #0d1322; border: 1px solid #4a5677; border-radius: 5px; color: #fff; padding: 0.5rem; margin-bottom: 1rem;"></textarea>
+        <div th:if="${#fields.hasErrors('reason')}" th:errors="*{reason}" style="color: #dc3545; font-size: 0.85em; margin-top: 5px;"></div>
+
+        <input type="hidden" name="commentId" id="modalCommentId">
+        <input type="hidden" name="publisherId" id="modalPublisherIdComment">
+        <input type="hidden" name="reviewId" id="modalReviewIdComment">
+
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('commentDeleteModal').close()">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="background: #b90512; border-color: #b90512;">Confirm Delete</button>
+        </div>
+    </form>
+</dialog>
+
+<footer th:replace="~{fragments/footer :: app-footer-minimal}">
+</footer>
+
+<script>
+    function openContentModal(content) {
+        document.getElementById('modalReviewText').textContent = content;
+        document.getElementById('contentModal').showModal();
+    }
+
+    function openDeleteModal(reviewId, publisherId) {
+
+        document.getElementById('modalReviewId').value = reviewId;
+        document.getElementById('modalPublisherId').value = publisherId;
+
+        const form = document.getElementById('deleteForm');
+        form.action = '/review/review/' + reviewId;
+
+        document.getElementById('deleteModal').showModal();
+    }
+    function openCommentDeleteModal(commentId, publisherId, reviewId) {
+        const form = document.getElementById('commentDeleteForm');
+
+        form.action = '/review/comments/delete';
+
+        document.getElementById('modalCommentId').value = commentId;
+        document.getElementById('modalPublisherIdComment').value = publisherId;
+        document.getElementById('modalReviewIdComment').value = reviewId;
+
+        document.getElementById('commentDeleteModal').showModal();
+    }
+
+    function toggleCommentsRow(reviewId) {
+        const row = document.getElementById('comments-row-' + reviewId);
+
+        if (row.style.display === 'none' || row.style.display === '') {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>

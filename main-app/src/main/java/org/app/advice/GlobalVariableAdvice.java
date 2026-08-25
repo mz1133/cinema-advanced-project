@@ -1,12 +1,14 @@
 package org.app.advice;
 
-import jakarta.servlet.http.HttpSession;
+
+import org.app.user.model.User;
 import org.app.user.service.UserService;
 import org.app.web.dto.UserHeaderDto;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import java.util.UUID;
+import java.security.Principal;
+
 
 @ControllerAdvice
 public class GlobalVariableAdvice {
@@ -20,15 +22,21 @@ public class GlobalVariableAdvice {
 
 
     @ModelAttribute("currentUser")
-    public UserHeaderDto currentUser(HttpSession session) {
+    public UserHeaderDto currentUser(Principal principal) {
 
-        UUID uuid = (UUID) session.getAttribute("userId");
-
-        if(uuid == null) {
+        if (principal == null) {
             return null;
         }
 
-        return userService.getUserHeaderDto(uuid);
+        User user = userService.getUserByUsernameOrEmail(principal.getName());
+
+        if (user == null) {
+            return null;
+        }
+
+        return userService.getUserHeaderDto(user.getId());
 
     }
+
 }
+

@@ -31,7 +31,7 @@ public class Movie {
     @Lob
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "`year`", nullable = false)
     private Integer year;
 
     @Column(nullable = false)

@@ -8,7 +8,9 @@ import org.app.movie.model.Movie;
 import org.app.movie.model.ReleaseYear;
 import org.app.movie.service.MovieService;
 import org.app.subscription.service.SubscriptionService;
+import org.app.user.model.User;
 import org.app.user.service.UserService;
+import org.app.web.dto.PurchaseSubscriptionDto;
 import org.app.web.dto.UpdateProfileRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.UUID;
 
 
@@ -39,8 +42,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ModelAndView getHomePage(@SessionAttribute(name = "userId", required = false) UUID id,
-                                    @RequestParam(required = false) String keyword,
+    public ModelAndView getHomePage(@RequestParam(required = false) String keyword,
                                     @RequestParam(required = false) Integer year,
                                     @RequestParam(required = false) Genre genre,
                                     @RequestParam(required = false) Country country,
@@ -59,13 +61,15 @@ public class UserController {
     }
 
     @GetMapping("/my-profile")
-    public ModelAndView getMyProfile(@SessionAttribute(name = "userId", required = false) UUID id,
+    public ModelAndView getMyProfile(Principal principal,
                                      @PageableDefault(size = 5) Pageable pageable) {
 
+        User user = userService.getUserByUsername(principal.getName());
+        UUID userId = user.getId();
 
-        Page<Movie> movies = movieService.getMoviesByPublisher(id, pageable);
+        Page<Movie> movies = movieService.getMoviesByPublisher(userId, pageable);
 
-        UpdateProfileRequest updateProfileRequest = userService.getCurrentProfileData(id);
+        UpdateProfileRequest updateProfileRequest = userService.getCurrentProfileData(userId);
 
         ModelAndView modelAndView = new ModelAndView("my-profile");
         modelAndView.addObject("updateProfileRequest", updateProfileRequest);
@@ -75,7 +79,7 @@ public class UserController {
     }
 
     @PostMapping("/my-profile/update")
-    public ModelAndView updateMyProfile(@SessionAttribute(name = "userId", required = false) UUID id,
+    public ModelAndView updateMyProfile(Principal principal,
                                         @Valid UpdateProfileRequest updateProfileRequest,
                                         BindingResult bindingResult,
                                         RedirectAttributes redirectAttributes) {
@@ -85,7 +89,7 @@ public class UserController {
             return new ModelAndView("my-profile");
         }
 
-        userService.updateUserProfile(id, updateProfileRequest);
+        userService.updateUserProfile(principal.getName(), updateProfileRequest);
 
         redirectAttributes.addFlashAttribute("successMessage",
                 "Profile updated successfully");
@@ -94,33 +98,39 @@ public class UserController {
     }
 
     @GetMapping("/subscriptions")
-    public ModelAndView getSubscription(@SessionAttribute(name = "userId", required = false) UUID id) {
-
-        if (id == null) {
-            return new ModelAndView("redirect:/login");
-        }
+    public ModelAndView getSubscription() {
 
         ModelAndView modelAndView = new ModelAndView("subscriptions");
         modelAndView.addObject("plans", subscriptionProperties.getPlans());
+        modelAndView.addObject("purchaseSubscriptionDto", new PurchaseSubscriptionDto());
 
         return modelAndView;
     }
 
     @PostMapping("/subscriptions/purchase")
-    public ModelAndView makePurchase(@SessionAttribute(name = "userId", required = false) UUID userId,
-                                     @RequestParam String planCode,
+    public ModelAndView makePurchase(Principal principal,
+                                     @Valid @ModelAttribute("purchaseSubscriptionDto") PurchaseSubscriptionDto purchaseSubscriptionDto,
+                                     BindingResult bindingResult,
                                      RedirectAttributes redirectAttributes) {
 
-        if (planCode == null) {
-            return new ModelAndView("redirect:/subscriptions");
+        if (bindingResult.hasErrors()) {
+            ModelAndView modelAndView = new ModelAndView("subscriptions");
+            modelAndView.addObject("plans", subscriptionProperties.getPlans());
+            modelAndView.addObject("hasErrors", true);
+            return modelAndView;
         }
 
-        subscriptionService.addPlan(userId, planCode);
+        subscriptionService.addPlan(purchaseSubscriptionDto, principal.getName());
 
-        redirectAttributes.addFlashAttribute(
-                "successMessage", "Plan added successfully!");
+        redirectAttributes.addFlashAttribute("successMessage", "Plan added successfully!");
 
         return new ModelAndView("redirect:/home/subscriptions");
+    }
+
+
+    @GetMapping("/my-reviews")
+    public String getMyReviews() {
+        return "my-reviews";
     }
 
 

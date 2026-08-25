@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineSpectrum | Notifications</title>
+    <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/home.css"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <style>
+        .notification-card {
+            transition: background-color 0.3s ease;
+        }
+        details[open] .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+        .btn-mark-read {
+            background-color: #d97706 !important;
+            color: #ffffff !important;
+            border: 1px solid #b45309 !important;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .btn-mark-read:hover {
+            background-color: #b45309 !important;
+            border-color: #92400e !important;
+        }
+
+        .status-badge {
+            font-size: 0.85rem !important;
+            font-weight: 700 !important;
+        }
+
+        .status-badge.unread,
+        .notification-card:not(.read) .status-badge {
+            color: #0369a1 !important;
+        }
+
+        .status-badge.read,
+        .notification-card.read .status-badge {
+            color: #15803d !important;
+        }
+    </style>
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;">
+
+<header class="site-header user-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000;">
+    <div class="container header-inner">
+        <div th:replace="~{fragments/logo :: logo-brand}"></div>
+
+        <div class="user-profile-widget" style="display: flex; align-items: center; gap: 15px;">
+            <div style="position: relative;">
+                <a th:href="@{/notifications}" style="color: inherit; text-decoration: none; font-size: 1.2rem;">
+                    <i class="fas fa-bell"></i>
+                    <span th:if="${unreadCount != null and unreadCount > 0}" id="globalBadge" class="badge-counter" th:text="${unreadCount}"
+                          style="position: absolute; top: -5px; right: -8px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px;">
+                    </span>
+                </a>
+            </div>
+
+            <img th:src="${currentUser.pictureUrl}" alt="Profile Picture" class="user-avatar"/>
+            <div class="user-meta-info">
+                <span th:text="${currentUser.username}" class="username">AlexDeveloper</span>
+            </div>
+            <form th:action="@{/logout}" th:method="post" class="m-0">
+                <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<div class="dashboard-wrapper" style="margin-top: 80px; display: flex; flex: 1;">
+
+    <div th:replace="~{fragments/sidebar :: user-sidebar}"></div>
+
+    <main class="main-content section" style="flex: 1; padding: 20px;">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 5px;">
+                <h2 style="margin: 0;">All Notifications</h2>
+
+                <div th:if="${successMessage}" style="padding: 8px 14px; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 6px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-check-circle"></i>
+                    <span th:text="${successMessage}"></span>
+                </div>
+
+                <div th:if="${errorMessage}" style="padding: 8px 14px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 6px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span th:text="${errorMessage}"></span>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(notifications)}" style="padding: 30px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; text-align: center;">
+                <i class="fas fa-bell-slash" style="font-size: 2rem; color: #999; margin-bottom: 10px; display: block;"></i>
+                <p style="margin: 0; font-size: 1rem; color: #333; font-weight: 500;">You have no notifications available.</p>
+            </div>
+
+            <div class="notifications-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <div th:each="notif : ${notifications}"
+                     class="notification-card"
+                     th:style="${notif.isRead} ? 'background: #fdfdfd; border: 1px solid #d4edda; padding: 15px; border-radius: 6px;' : 'background: #eef6ff; border: 1px solid #bce8f1; padding: 15px; border-radius: 6px; font-weight: bold;'">
+
+                    <details style="width: 100%;">
+                        <summary style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; list-style: none;">
+
+                            <div>
+                                <span style="font-size: 0.8rem; background: #6c757d; color: white; padding: 2px 6px; border-radius: 4px; margin-right: 10px;" th:text="${notif.type}">TYPE</span>
+                                <span th:text="${#strings.abbreviate(notif.message, 50)}"></span>
+                                <small style="display: block; color: #777; font-weight: normal; margin-top: 5px;" th:text="${#temporals.format(notif.createdAt, 'dd.MM.yyyy HH:mm')}"></small>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 15px;" onclick="event.stopPropagation();">
+
+                                <span class="status-badge" th:style="${notif.isRead} ? 'color: #28a745; font-size: 0.85rem;' : 'color: #007bff; font-size: 0.85rem;'"
+                                      th:text="${notif.isRead} ? 'Read' : 'Unread'">
+                                    Статус
+                                </span>
+
+                                <i class="fas fa-chevron-down" style="color: #6c757d;"></i>
+
+                                <form th:action="@{/notifications/notification/{id}(id=${notif.id})}" method="post" style="margin: 0;">
+                                    <button type="submit" class="btn btn-sm btn-danger" style="padding: 5px 10px; font-size: 0.8rem;"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </summary>
+
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.05); font-weight: normal; color: #333;">
+                            <p th:text="${notif.message}" style="margin: 0;">ие...</p>
+
+                            <form th:if="!${notif.isRead}" th:action="@{/notifications/{id}(id=${notif.id})}" method="post" style="margin-top: 10px;">
+                                <button type="submit" class="btn-mark-read" style="font-size: 0.75rem; padding: 2px 8px;">Mark as read</button>
+                            </form>
+                        </div>
+                    </details>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/footer :: app-footer-minimal}"></div>
+
+</body>
+</html>

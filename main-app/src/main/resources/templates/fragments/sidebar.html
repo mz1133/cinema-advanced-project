@@ -4,6 +4,16 @@
 <aside class="left-sidebar" th:fragment="user-sidebar">
     <nav class="sidebar-menu" aria-label="User dashboard navigation">
         <a class="sidebar-link active" href="/home">Home / Catalog</a>
+        <th:block th:if="${currentUser.isCanAddReviewAndComment or currentUser.role.toString().contains('ADMIN') or currentUser.role.toString().contains('SUPER_ADMIN')}">
+            <a class="sidebar-link admin-link" th:href="@{/review/my-reviews}">My Reviews</a>
+        </th:block>
+
+
+        <th:block th:unless="${currentUser.isCanAddReviewAndComment or currentUser.role.toString().contains('ADMIN') or currentUser.role.toString().contains('SUPER_ADMIN')}">
+            <a class="sidebar-link disabled-link" onclick="document.getElementById('sub-msg-reviews').style.display='block';">My Reviews</a>
+            <small id="sub-msg-reviews" style="display: none; color: red; font-size: 12px; margin-top: 5px; margin-left: 18px;">Subscribe to unlock the My Reviews feature</small>
+        </th:block>
+
         <a class="sidebar-link" th:href="@{/home/my-profile}">My Profile</a>
         <th:block th:if="${currentUser.isCanAddMovie}"><a class="sidebar-link" th:href="@{/movies/new}" >Add Movie</a></th:block>
         <th:block th:unless="${currentUser.isCanAddMovie}">
@@ -17,6 +27,7 @@
         </th:block>
         <a class="sidebar-link admin-link" th:if="${currentUser.role.toString().contains('ADMIN')}" th:href="@{/admin/movies}">Manage Movies</a>
         <a class="sidebar-link admin-link" th:if="${currentUser.role.toString().contains('ADMIN')}" th:href="@{/admin/users}">Manage Users</a>
+        <a class="sidebar-link admin-link" th:if="${currentUser.role.toString().contains('ADMIN')}" th:href="@{/admin/reviews}">Manage Review/Comments</a>
         <a class="sidebar-link" th:href="@{/home/subscriptions}">Subscription</a>
     </nav>
 </aside>
