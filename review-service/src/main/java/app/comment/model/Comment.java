@@ -24,7 +24,7 @@ public class Comment {
     private UUID id;
 
     @Column(nullable = false)
-    @Size(min = 5, max = 50)
+    @Size(min = 5, max = 300)
     private String content;
 
     @Column(nullable = false)
@@ -37,6 +37,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
+    @OrderBy("createdOn DESC")
     private Review review;
 
     @Column(nullable = false)

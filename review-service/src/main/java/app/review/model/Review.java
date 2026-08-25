@@ -25,12 +25,15 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    @Size(min = 20, max = 200)
+    @Column(nullable = false, length = 1000)
+    @Size(min = 20, max = 1000)
     private String content;
 
     @Column(nullable = false)
     private UUID movieId;
+
+    @Column(nullable = false)
+    private String movieTitle;
 
     @Column(nullable = false)
     private UUID publisherId;
@@ -40,10 +43,9 @@ public class Review {
 
     private Integer userRating;
 
-    @Column(nullable = false)
-    private String userCountry;
-
     private boolean isDeleted;
+
+    private boolean isDeletedByAdministrator = false;
 
     @Column(nullable = false)
     private LocalDateTime createdOn;

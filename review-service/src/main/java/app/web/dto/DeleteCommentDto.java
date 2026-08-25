@@ -1,6 +1,6 @@
 package app.web.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,14 +12,16 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateReviewDto {
+public class DeleteCommentDto {
 
-    @NotBlank
+    @NotNull
     private UUID reviewId;
+    @NotNull
+    private UUID publisherId;
+    @NotNull
+    private UUID commentId;
+    @NotNull
 
-    @NotBlank(message = "Symbol must be between 20 and 200 symbols")
-    private String content;
-
-    private Integer rating;
-
+    @NotNull
+    private String reason;
 }
