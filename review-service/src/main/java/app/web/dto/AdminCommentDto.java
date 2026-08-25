@@ -15,9 +15,14 @@ import java.util.UUID;
 public class AdminCommentDto {
 
     private UUID commentId;
+
     private String content;
+
     private UUID publisherId;
+
     private boolean isDeleted;
+
     private String publisherUsername;
+
     private LocalDateTime createdOn;
 }

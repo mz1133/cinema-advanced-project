@@ -13,6 +13,7 @@ import java.util.UUID;
 public interface CommentRepository extends JpaRepository<Comment, UUID>, JpaSpecificationExecutor<Comment> {
 
     List<Comment> findAllByReviewIdAndIsDeletedFalse(UUID movieId);
+
     List<Comment> findByReviewIdInAndIsDeletedFalse(List<UUID> reviewIds);
 
 

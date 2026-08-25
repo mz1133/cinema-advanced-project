@@ -16,14 +16,24 @@ import java.util.UUID;
 public class AdminReviewDto {
 
     private UUID reviewId;
+
     private UUID movieId;
+
     private Integer rating;
+
     private boolean deleted;
+
     private String content;
+
     private String publisherUsername;
+
     private UUID publisherId;
+
     private String movieTitle;
+
     private Integer userRating;
+
     private LocalDateTime createdOn;
+
     private List<AdminCommentDto> comments;
 }

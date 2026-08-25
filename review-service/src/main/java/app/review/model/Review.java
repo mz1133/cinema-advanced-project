@@ -20,7 +20,6 @@ import java.util.UUID;
 @Table(name = "review")
 public class Review {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

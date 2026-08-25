@@ -13,11 +13,10 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<Review, UUID>, JpaSpecificationExecutor<Review> {
+public interface ReviewRepository extends JpaRepository<Review, UUID>,
+                                          JpaSpecificationExecutor<Review> {
 
     Page<Review> findAllByMovieIdAndIsDeletedFalseOrderByCreatedOnDesc(UUID id, Pageable pageable);
-
-
 
     Page<Review> findAll(Specification<Review> spec, Pageable pageable);
 

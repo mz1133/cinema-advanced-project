@@ -16,8 +16,10 @@ public class DeleteCommentDto {
 
     @NotNull
     private UUID reviewId;
+
     @NotNull
     private UUID publisherId;
+
     @NotNull
     private UUID commentId;
     @NotNull

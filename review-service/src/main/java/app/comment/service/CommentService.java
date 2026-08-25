@@ -29,13 +29,13 @@ public class CommentService {
     public CommentService(CommentRepository commentRepository, ReviewRepository reviewRepository) {
         this.commentRepository = commentRepository;
         this.reviewRepository = reviewRepository;
-
     }
 
     @CacheEvict(value = "reviews", allEntries = true)
     public Comment createComment(CreateCommentDto commentDto) {
 
-        Review review = reviewRepository.findById(commentDto.getReviewId()).orElseThrow(() -> new RuntimeException("Review not found"));
+        Review review = reviewRepository.findById(commentDto.getReviewId())
+                .orElseThrow(() -> new RuntimeException("Review not found"));
 
         Comment createdComment = Comment.builder()
                 .content(commentDto.getContent())
@@ -47,11 +47,10 @@ public class CommentService {
                 .updatedOn(LocalDateTime.now())
                 .build();
 
-        log.info("Successfully created comment by username: {%s}".formatted(commentDto.getPublisherUsername()));
-
+        log.info("Successfully created comment by username: {%s}"
+                .formatted(commentDto.getPublisherUsername()));
 
         return commentRepository.save(createdComment);
-
     }
 
     @CacheEvict(value = "reviews", allEntries = true)

@@ -30,7 +30,6 @@ public class ReviewService {
 
     private final static String ERROR_MESSAGE_REVIEW_NOT_FOUND = "Review with id: %s not found";
 
-
     private final ReviewRepository reviewRepository;
     private final CommentService commentService;
     private final CommentRepository commentRepository;
@@ -56,7 +55,9 @@ public class ReviewService {
                 .updatedOn(LocalDateTime.now())
                 .build();
 
-        log.info("Successfully created review with id: {%s} by user id: {%s} ".formatted(review.getId(), reviewDto.getPublisherId()));
+        log.info("Successfully created review with id: {%s} by user id: {%s} "
+                .formatted(review.getId(), reviewDto.getPublisherId()));
+
         return reviewRepository.save(review);
     }
 
@@ -66,14 +67,9 @@ public class ReviewService {
 
         Review reviewToDelete = getReviewById(id);
 
-        if (reviewToDelete.isDeleted()) {
+        if (reviewToDelete.isDeleted()) {throw new ReviewNotFoundException(ERROR_MESSAGE_REVIEW_NOT_FOUND.formatted(id));}
 
-            throw new ReviewNotFoundException(ERROR_MESSAGE_REVIEW_NOT_FOUND.formatted(id));
-        }
-
-        if(isAdmin){
-            reviewToDelete.setDeletedByAdministrator(true);
-        }
+        if(isAdmin){reviewToDelete.setDeletedByAdministrator(true);}
 
         reviewToDelete.setDeleted(true);
         reviewToDelete.setUpdatedOn(LocalDateTime.now());
@@ -105,9 +101,8 @@ public class ReviewService {
 
         return reviews.map(review -> {
 
-
-            List<Comment> comments = commentService.getAllCommentsByReviewIdAndIsDeletedFalse(review.getId());
-
+            List<Comment> comments = commentService
+                    .getAllCommentsByReviewIdAndIsDeletedFalse(review.getId());
 
             List<ViewCommentsDto> commentsDto = comments.stream()
                     .map(comment -> new ViewCommentsDto(
@@ -119,7 +114,6 @@ public class ReviewService {
                     ))
                     .toList();
 
-
             return new ViewReviewsAndCommentsDto(
                     review.getContent(),
                     review.getId(),
@@ -129,19 +123,19 @@ public class ReviewService {
                     commentsDto
             );
         });
-
-
     }
 
     public Page<Review> getAllReviewsByMovieIdIsNotDeleted(UUID movieId, Pageable pageable) {
 
-        return reviewRepository.findAllByMovieIdAndIsDeletedFalseOrderByCreatedOnDesc(movieId, pageable);
+        return reviewRepository
+                .findAllByMovieIdAndIsDeletedFalseOrderByCreatedOnDesc(movieId, pageable);
     }
 
     public Review getReviewById(UUID id) {
 
         return reviewRepository.findById(id)
-                .orElseThrow(() -> new ReviewNotFoundException(ERROR_MESSAGE_REVIEW_NOT_FOUND.formatted(id)));
+                .orElseThrow(() -> new ReviewNotFoundException(ERROR_MESSAGE_REVIEW_NOT_FOUND
+                        .formatted(id)));
     }
 
     @Cacheable(value = "reviews")
@@ -269,7 +263,8 @@ public class ReviewService {
     @Transactional
     public void restoreReview(UUID reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ReviewNotFoundException(ERROR_MESSAGE_REVIEW_NOT_FOUND.formatted(reviewId)));
+                .orElseThrow(() -> new ReviewNotFoundException(ERROR_MESSAGE_REVIEW_NOT_FOUND
+                        .formatted(reviewId)));
 
         review.setDeleted(false);
 

@@ -1,7 +1,7 @@
 package app.web.dto;
 
 
-import app.review.model.Review;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
