@@ -22,7 +22,6 @@ public class InitSuperAdminUser implements ApplicationRunner {
     private final static LocalDateTime LOCAL_DATE_TIME_NOW = LocalDateTime.now();
     private final static String DEFAULT_PICTURE_URL = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -44,7 +43,6 @@ public class InitSuperAdminUser implements ApplicationRunner {
 
     @NonNull
     private User buildUserSuperAdminRole() {
-
 
         return User.builder()
                 .username(ADMIN_USERNAME)

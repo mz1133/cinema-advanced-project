@@ -22,8 +22,6 @@ public class ReviewDeleteEventListener {
     @EventListener
     public void handleReviewDeleted(ReviewDeleteEvent event) {
 
-
-
         notificationService.createNotification(
                 event.getUser(),
                 DELETE_REVIEW_MESSAGE.formatted(event.getReasonMessage()),

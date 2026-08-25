@@ -20,7 +20,6 @@ public class GlobalNotificationAdvice {
     public GlobalNotificationAdvice(NotificationService notificationService, UserService userService) {
         this.notificationService = notificationService;
         this.userService = userService;
-
     }
 
     @ModelAttribute("unreadCount")

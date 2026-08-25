@@ -14,8 +14,8 @@ import org.app.user.model.User;
 @NoArgsConstructor
 public class ReviewDeleteEvent {
 
-
     private User user;
+
     private String reasonMessage;
 
 

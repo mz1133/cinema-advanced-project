@@ -13,13 +13,11 @@ import java.security.Principal;
 @ControllerAdvice
 public class GlobalVariableAdvice {
 
-
     private final UserService userService;
 
     public GlobalVariableAdvice(UserService userService) {
         this.userService = userService;
     }
-
 
     @ModelAttribute("currentUser")
     public UserHeaderDto currentUser(Principal principal) {

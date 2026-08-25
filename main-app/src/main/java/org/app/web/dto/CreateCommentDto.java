@@ -18,7 +18,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateCommentDto {
 
-
     private UUID publisherId;
 
     private String publisherUsername;

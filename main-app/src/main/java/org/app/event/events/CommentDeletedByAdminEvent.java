@@ -14,8 +14,12 @@ import java.util.UUID;
 public class CommentDeletedByAdminEvent {
 
     private User user;
+
     private UUID reviewId;
+
     private UUID commentId;
+
     private String publisherUsername;
+
     private String reason;
 }

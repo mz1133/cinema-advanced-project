@@ -16,6 +16,5 @@ public interface MovieRepository extends JpaRepository<Movie, UUID>, JpaSpecific
 
     Page<Movie> getFirstByTitle(String keyword, Pageable pageable);
 
-
     Page<Movie> findByPublisherId(UUID id, Pageable pageable);
 }

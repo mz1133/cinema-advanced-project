@@ -15,10 +15,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+
 @Slf4j
 @Service
 public class SubscriptionService {
@@ -62,7 +62,8 @@ public class SubscriptionService {
 
         isHaveAlreadySubscription(user);
 
-        Subscription newSubscription = buildSubscription(getSubscriptionPlan(dto.getPlanCode()));
+        Subscription newSubscription =
+                buildSubscription(getSubscriptionPlan(dto.getPlanCode()));
 
         subscriptionRepository.save(newSubscription);
 
@@ -72,15 +73,15 @@ public class SubscriptionService {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-
         String formattedStart = newSubscription.getStartDate().format(formatter);
 
 
-
-        String message = String.format(NOTIFICATION_MESSAGE_FOR_SUCCESS_PURCHASE_SUBSCRIPTION_PLAN,
+        String message = String.format
+                (NOTIFICATION_MESSAGE_FOR_SUCCESS_PURCHASE_SUBSCRIPTION_PLAN,
                 formattedStart, newSubscription.getExpirationDate());
 
-        notificationService.createNotification(user, message, TYPE_NOTIFICATION_NAME_TITLE);
+        notificationService.createNotification
+                (user, message, TYPE_NOTIFICATION_NAME_TITLE);
 
         log.info("Subscription plan id: {%s} saved successfully to user username:{%s}".formatted(newSubscription.getId(), user.getUsername()));
 
@@ -94,7 +95,8 @@ public class SubscriptionService {
                 .stream()
                 .filter(p -> p.getCode().equalsIgnoreCase(planCode))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException(ERROR_MESSAGE_SUBSCRIPTION_PLAN_NOT_FOUD));
+                .orElseThrow(() -> new RuntimeException
+                        (ERROR_MESSAGE_SUBSCRIPTION_PLAN_NOT_FOUD));
         return subPlan;
     }
 
@@ -119,7 +121,8 @@ public class SubscriptionService {
     private static void isHaveAlreadySubscription(User user) {
 
         if (user.getSubscription() != null && user.getSubscription().isActive()) {
-            throw new UserAlreadyHasSubscriptionException(ERROR_MESSAGE_ALREADY_HAVE_PLAN
+            throw new UserAlreadyHasSubscriptionException
+                    (ERROR_MESSAGE_ALREADY_HAVE_PLAN
                     .formatted(user.getSubscription().getExpirationDate()));
         }
     }

@@ -38,6 +38,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class MovieService {
+
     private static final String MESSAGE_POSTED_BY_CINE_CATALOG = "cine-catalog";
     private static final String ERROR_MESSAGE_MOVIE_NOT_FOUND_TO_DELETE = "The movie you are trying to delete could not be found.";
     private static final String ERROR_MESSAGE_RESTORE_MOVIE_NOT_FOUND = "The movie you are trying to restore could not be found.";
@@ -263,7 +264,6 @@ public class MovieService {
         return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sorting);
     }
 
-
     @NonNull
     private Movie buildMovie(CreateMovieRequest createMovieRequest, Role role, User user) {
 
@@ -288,7 +288,6 @@ public class MovieService {
 
                 .build();
     }
-
 
     private String getPostedByName(String username, Role role) {
 

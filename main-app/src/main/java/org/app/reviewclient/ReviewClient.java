@@ -12,7 +12,6 @@ import java.util.UUID;
 @FeignClient(name = "review-service", url = "http://localhost:8081")
 public interface ReviewClient {
 
-
     @GetMapping("/api/reviews/movies/{id}")
     CustomPageDto<ViewReviewsAndCommentsDto> getReviewMovie(
             @PathVariable("id") UUID id,
@@ -23,10 +22,8 @@ public interface ReviewClient {
     @PostMapping("/api/reviews")
     ResponseEntity<Void> createReview(@RequestBody CreateReviewDto createReviewDto);
 
-
     @PostMapping("/api/comments")
     ResponseEntity<Void> createComment(@RequestBody CreateCommentDto createCommentDto);
-
 
     @GetMapping("/api/reviews/reviews")
     CustomPageDto<AdminReviewDto> getAllReviewsAndComments(
@@ -56,7 +53,6 @@ public interface ReviewClient {
 
     @PutMapping("/api/reviews/{id}")
     void updateReview(@PathVariable("id") UUID id, @RequestBody EditReviewDto dto);
-
 
     @PostMapping("/api/comments/delete")
     void deleteComment(@RequestBody DeleteCommentDto deleteCommentDto);

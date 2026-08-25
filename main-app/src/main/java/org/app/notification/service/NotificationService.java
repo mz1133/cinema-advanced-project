@@ -21,15 +21,12 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-
     public NotificationService(NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
     }
 
     @Transactional
     public void createNotification(User user, String message, String type) {
-
-
 
         Notification notification = Notification.builder()
                 .user(user)
@@ -41,14 +38,13 @@ public class NotificationService {
         notificationRepository.save(notification);
 
         log.info("Notification with id: { %s }, has been created to user username: {%s}".formatted(notification.getId(), user.getUsername()));
-
     }
-
-
 
     @Transactional(readOnly = true)
     public List<Notification> getUnreadForUser(UUID userId) {
-        return notificationRepository.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId);
+
+        return notificationRepository
+                .findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId);
     }
 
     @Transactional(readOnly = true)
@@ -73,16 +69,17 @@ public class NotificationService {
         log.info("Notification with id: { %s }, has been deleted".formatted(notificationId));
     }
 
-
     public List<Notification> getNotificationsForUser(UUID id) {
 
-        return notificationRepository.findByUserIdAndIsDeletedFalseOrderByCreatedAtDesc(id);
+        return notificationRepository
+                .findByUserIdAndIsDeletedFalseOrderByCreatedAtDesc(id);
     }
 
     public void setReadNotification(UUID id) {
 
         Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+                .orElseThrow(() -> new IllegalArgumentException
+                        ("Notification not found"));
 
         notification.setRead(true);
 

@@ -25,8 +25,8 @@ public class CommentEventListener {
                 event.getCommentId(),
                 event.getReason());
 
-
-        notificationService.createNotification(event.getUser(), message, TYPE_NOTIFICATION);
+        notificationService.createNotification
+                (event.getUser(), message, TYPE_NOTIFICATION);
     }
 
 }

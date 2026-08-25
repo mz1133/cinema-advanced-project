@@ -17,7 +17,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CreateReviewDto {
 
-
     private UUID publisherId;
 
     @NotNull

@@ -46,6 +46,5 @@ public class ActorService {
                 .createdOn(LOCAL_DATE_TIME_NOW)
                 .updatedOn(LOCAL_DATE_TIME_NOW)
                 .build();
-
     }
 }

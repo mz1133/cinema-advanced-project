@@ -38,7 +38,6 @@ public class EditMovieDetails {
     @NotEmpty(message = "County cannot be empty.")
     private List<Country> countries = new ArrayList<>();
 
-
     private String description;
 
     @NotBlank(message = "Studio cannot be empty.")

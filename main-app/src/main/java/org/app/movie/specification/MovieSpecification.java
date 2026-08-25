@@ -8,7 +8,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class MovieSpecification {
 
-
     public static  Specification<Movie> hasKeyword(String keyword) {
 
         return ((root, query, criteriaBuilder) -> {
@@ -21,8 +20,6 @@ public class MovieSpecification {
                     "%" + keyword.toLowerCase() + "%");
         });
     }
-
-
 
     public static Specification<Movie> hasYear(Integer year) {
 

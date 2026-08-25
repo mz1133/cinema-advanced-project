@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EditReviewDto {
 
-
     @Min(value = 1, message = "Rating must be at least 1!")
     @Max(value = 10, message = "Rating must be at most 10!")
     private Integer rating;

@@ -29,13 +29,10 @@ public class SubscriptionScheduler {
         this.notificationService = notificationService;
     }
 
-
     @Scheduled(cron = "0 1 0 * * *")
     public void notifyUsersAboutExpiringSubscriptions() {
 
-
         LocalDate targetDate = LocalDate.now().plusDays(3);
-
 
         LocalDateTime startOfDay = targetDate.atStartOfDay();
         LocalDateTime endOfDay = targetDate.atTime(LocalTime.MAX);
