@@ -31,7 +31,6 @@ public class ReviewController {
 
     private static final int REVIEWS_PAGE_SIZE = 10;
 
-
     private final ReviewClient reviewClient;
     private final UserService userService;
     private final MovieService movieService;
@@ -45,7 +44,6 @@ public class ReviewController {
 
     }
 
-
     @PostMapping("/{movieId}")
     public ModelAndView createReview(@PathVariable("movieId") UUID movieId,
                                      @Valid @ModelAttribute("createReviewDto") CreateReviewDto createReviewDto,
@@ -56,15 +54,11 @@ public class ReviewController {
         if (bindingResult.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("movie-details", model);
 
-
             modelAndView.addObject("movie", movieService.getMovie(movieId));
-
 
             CustomPageDto<ViewReviewsAndCommentsDto> reviewsPage = reviewClient.getReviewMovie(movieId, 0, 10);
 
-
             modelAndView.addObject("review", reviewsPage.getContent());
-
 
             modelAndView.addObject("createCommentDto", new CreateCommentDto());
 
@@ -72,6 +66,7 @@ public class ReviewController {
         }
 
         User use = userService.getUserByUsername(principal.getName());
+
         Movie movie = movieService.getMovie(movieId);
 
         createReviewDto.setPublisherId(use.getId());
@@ -82,9 +77,7 @@ public class ReviewController {
 
         reviewClient.createReview(createReviewDto);
 
-
         return new ModelAndView("redirect:/movies/details/" + movieId + "#reviews-list");
-
 
     }
 
@@ -99,20 +92,26 @@ public class ReviewController {
         if (bindingResult.hasErrors()) {
             Movie movie = movieService.getMovie(movieId);
 
-            CustomPageDto<ViewReviewsAndCommentsDto> reviewsPage = reviewClient.getReviewMovie(movieId, page, REVIEWS_PAGE_SIZE);
+            CustomPageDto<ViewReviewsAndCommentsDto> reviewsPage =
+                    reviewClient.getReviewMovie(movieId, page, REVIEWS_PAGE_SIZE);
 
             ModelAndView modelAndView = new ModelAndView("movie-details");
 
-            modelAndView.addObject("movie", movie);
-            modelAndView.addObject("review", reviewsPage.getContent());
-            modelAndView.addObject("currentPage", reviewsPage.getCurrentPage());
-            modelAndView.addObject("pageSize", REVIEWS_PAGE_SIZE);
-            modelAndView.addObject("totalReviews", reviewsPage.getTotalElements());
-            modelAndView.addObject("createReviewDto", new CreateReviewDto());
+            modelAndView.addObject
+                    ("movie", movie);
+            modelAndView.addObject
+                    ("review", reviewsPage.getContent());
+            modelAndView.addObject
+                    ("currentPage", reviewsPage.getCurrentPage());
+            modelAndView.addObject
+                    ("pageSize", REVIEWS_PAGE_SIZE);
+            modelAndView.addObject
+                    ("totalReviews", reviewsPage.getTotalElements());
+            modelAndView.addObject
+                    ("createReviewDto", new CreateReviewDto());
 
             return modelAndView;
         }
-
 
         User user = userService.getUserByUsername(principal.getName());
 
@@ -122,10 +121,10 @@ public class ReviewController {
 
         reviewClient.createComment(createCommentDto);
 
-        return new ModelAndView("redirect:/movies/details/" + movieId + "#comments-" + reviewId);
+        return new ModelAndView
+                ("redirect:/movies/details/" + movieId + "#comments-" + reviewId);
 
     }
-
 
     @GetMapping("/my-reviews")
     public ModelAndView getMyReviews(
@@ -136,47 +135,53 @@ public class ReviewController {
             @RequestParam(defaultValue = "10") int size,
             Principal principal) {
 
-
         User user = userService.getUserByUsername(principal.getName());
-
 
         CustomPageDto<AdminReviewDto> pageData = reviewClient.getUserReviews(
                 user.getId(), keyword, movieId, movieTitle, page, size
         );
 
-
         ModelAndView modelAndView = new ModelAndView("my-reviews");
-        modelAndView.addObject("pageData", pageData);
-        modelAndView.addObject("keyword", keyword);
-        modelAndView.addObject("movieId", movieId);
-        modelAndView.addObject("movieTitle", movieTitle);
-        modelAndView.addObject("pageSize", size);
-        modelAndView.addObject("reviewEditDto", new EditReviewDto());
+
+        modelAndView.addObject
+                ("pageData", pageData);
+        modelAndView.addObject
+                ("keyword", keyword);
+        modelAndView.addObject
+                ("movieId", movieId);
+        modelAndView.addObject
+                ("movieTitle", movieTitle);
+        modelAndView.addObject
+                ("pageSize", size);
+        modelAndView.addObject
+                ("reviewEditDto", new EditReviewDto());
 
         return modelAndView;
     }
 
     @PostMapping("/my-reviews/{id}")
-    public String deleteMyReview(@PathVariable UUID id, Principal principal,  RedirectAttributes redirectAttributes) {
+    public String deleteMyReview(@PathVariable UUID id, Principal principal,
+                                 RedirectAttributes redirectAttributes) {
 
         User user = userService.getUserByUsername(principal.getName());
         boolean isAdmin = userService.isAdmin(user);
 
-
         reviewClient.deleteReview(id, isAdmin);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Review deleted successfully!");
+        redirectAttributes.addFlashAttribute
+                ("successMessage", "Review deleted successfully!");
 
         return "redirect:/review/my-reviews";
     }
 
     @PostMapping("/my-reviews/{id}/restore")
-    public String restoreMyReview(@PathVariable UUID id,  RedirectAttributes redirectAttributes) {
+    public String restoreMyReview(@PathVariable UUID id,
+                                  RedirectAttributes redirectAttributes) {
 
         reviewClient.restoreReview(id);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Review restore successfully!");
-
+        redirectAttributes.addFlashAttribute
+                ("successMessage", "Review restore successfully!");
 
         return "redirect:/review/my-reviews";
     }
@@ -193,8 +198,8 @@ public class ReviewController {
                                      Principal principal,
                                      RedirectAttributes redirectAttributes) {
 
-
         if (bindingResult.hasErrors()) {
+
             User user = userService.getUserByUsername(principal.getName());
 
             CustomPageDto<AdminReviewDto> pageData = reviewClient.getUserReviews(
@@ -202,30 +207,32 @@ public class ReviewController {
             );
 
             ModelAndView modelAndView = new ModelAndView("my-reviews");
-            modelAndView.addObject("pageData", pageData);
-            modelAndView.addObject("keyword", keyword);
-            modelAndView.addObject("movieId", movieId);
-            modelAndView.addObject("movieTitle", movieTitle);
-            modelAndView.addObject("pageSize", size);
 
+            modelAndView.addObject
+                    ("pageData", pageData);
+            modelAndView.addObject
+                    ("keyword", keyword);
+            modelAndView.addObject
+                    ("movieId", movieId);
+            modelAndView.addObject
+                    ("movieTitle", movieTitle);
+            modelAndView.addObject
+                    ("pageSize", size);
 
-            modelAndView.addObject("failedReviewId", id);
+            modelAndView.addObject
+                    ("failedReviewId", id);
 
             return modelAndView;
         }
 
-
         reviewClient.updateReview(id, reviewEditDto);
 
-
-        redirectAttributes.addFlashAttribute("successMessage", "Review successfully updated!");
-
+        redirectAttributes
+                .addFlashAttribute("successMessage", "Review successfully updated!");
 
         return new ModelAndView("redirect:/review/my-reviews");
 
-
     }
-
 
     @PostMapping("/review/{id}")
     public ModelAndView deleteReview(@PathVariable UUID id,
@@ -238,7 +245,6 @@ public class ReviewController {
                                      @RequestParam(required = false) String movieTitle,
                                      @PageableDefault(size = 10) Pageable pageable,
                                      RedirectAttributes redirectAttributes) {
-
 
         if (bindingResult.hasErrors()) {
 
@@ -254,19 +260,23 @@ public class ReviewController {
 
             ModelAndView modelAndView = new ModelAndView("manage-reviews");
 
-            modelAndView.addObject("pageData", reviews);
-            modelAndView.addObject("pageSize", pageable.getPageSize());
-
-            modelAndView.addObject("keyword", keyword);
-            modelAndView.addObject("movieId", movieId);
-            modelAndView.addObject("publisherUsername", publisherUsername);
-            modelAndView.addObject("movieTitle", movieTitle);
-            modelAndView.addObject("deleteCommentDto", new DeleteCommentDto());
-
+            modelAndView.addObject
+                    ("pageData", reviews);
+            modelAndView.addObject
+                    ("pageSize", pageable.getPageSize());
+            modelAndView.addObject
+                    ("keyword", keyword);
+            modelAndView.addObject
+                    ("movieId", movieId);
+            modelAndView.addObject
+                    ("publisherUsername", publisherUsername);
+            modelAndView.addObject
+                    ("movieTitle", movieTitle);
+            modelAndView.addObject
+                    ("deleteCommentDto", new DeleteCommentDto());
 
             return modelAndView;
         }
-
 
         User admin = userService.getUserByUsername(principal.getName());
 
@@ -276,11 +286,9 @@ public class ReviewController {
             return new ModelAndView("redirect:/home");
         }
 
-
         reviewClient.deleteReview(id, isAdmin);
 
         User user = userService.getUserById(reviewDeleteNotification.getPublisherId());
-
 
         ReviewDeleteEvent event = new ReviewDeleteEvent();
         event.setUser(user);
@@ -289,7 +297,6 @@ public class ReviewController {
         publisher.publishEvent(event);
 
         redirectAttributes.addFlashAttribute("success", "Review was successfully deleted!");
-
 
         return new ModelAndView("redirect:/admin/reviews");
     }
@@ -319,15 +326,20 @@ public class ReviewController {
 
             ModelAndView modelAndView = new ModelAndView("manage-reviews");
 
-            modelAndView.addObject("pageData", reviews);
-            modelAndView.addObject("pageSize", pageable.getPageSize());
-            modelAndView.addObject("keyword", keyword);
-            modelAndView.addObject("movieId", movieId);
-            modelAndView.addObject("publisherUsername", publisherUsername);
-            modelAndView.addObject("movieTitle", movieTitle);
-
-
-            modelAndView.addObject("reviewDeleteNotification", new ReviewDeleteNotification());
+            modelAndView.addObject
+                    ("pageData", reviews);
+            modelAndView.addObject
+                    ("pageSize", pageable.getPageSize());
+            modelAndView.addObject
+                    ("keyword", keyword);
+            modelAndView.addObject
+                    ("movieId", movieId);
+            modelAndView.addObject
+                    ("publisherUsername", publisherUsername);
+            modelAndView.addObject
+                    ("movieTitle", movieTitle);
+            modelAndView.addObject
+                    ("reviewDeleteNotification", new ReviewDeleteNotification());
 
             return modelAndView;
         }
@@ -335,11 +347,11 @@ public class ReviewController {
         User admin = userService.getUserByUsername(principal.getName());
 
         if (!userService.isAdmin(admin)) {
+
             return new ModelAndView("redirect:/home");
         }
 
         User user = userService.getUserById(deleteCommentDto.getPublisherId());
-
 
         reviewClient.deleteComment(deleteCommentDto);
 
@@ -353,7 +365,8 @@ public class ReviewController {
 
         publisher.publishEvent(event);
 
-        redirectAttributes.addFlashAttribute("success", "Comment was successfully deleted!");
+        redirectAttributes
+                .addFlashAttribute("success", "Comment was successfully deleted!");
 
         return new ModelAndView("redirect:/admin/reviews");
     }

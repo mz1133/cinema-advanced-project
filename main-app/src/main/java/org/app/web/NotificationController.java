@@ -26,7 +26,6 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-
     @GetMapping
     public ModelAndView showNotifications(Principal principal) {
 
@@ -40,14 +39,11 @@ public class NotificationController {
     }
 
     @PostMapping("/{id}")
-    public String markAsReadNotification(@PathVariable UUID id,
-                               Principal principal) {
+    public String markAsReadNotification(@PathVariable UUID id) {
 
         notificationService.setReadNotification(id);
 
         return "redirect:/notifications";
-
-
     }
 
     @PostMapping("/notification/{id}")
@@ -56,19 +52,18 @@ public class NotificationController {
                                      RedirectAttributes redirectAttributes) {
 
         if(id == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Notification not found!");
+            redirectAttributes
+                    .addFlashAttribute
+                            ("errorMessage", "Notification not found!");
             return "redirect:/notifications";
         }
 
-
-
-
         notificationService.deleteNotification(id, principal.getName());
-        redirectAttributes.addFlashAttribute("successMessage", "Notification deleted successfully!");
+        redirectAttributes
+                .addFlashAttribute
+                        ("successMessage", "Notification deleted successfully!");
 
         return "redirect:/notifications";
-
-
     }
 
 

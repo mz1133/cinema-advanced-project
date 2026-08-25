@@ -43,6 +43,7 @@ public class MovieController {
         MovieOptionsDto movieOptionsDto = movieService.getMovieOptions();
 
         ModelAndView modelAndView = new ModelAndView("add-movies");
+
         modelAndView.addObject("movieDto", new CreateMovieRequest());
         modelAndView.addObject("movieOptions", movieOptionsDto);
 

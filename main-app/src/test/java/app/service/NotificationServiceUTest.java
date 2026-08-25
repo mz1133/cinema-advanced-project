@@ -27,7 +27,6 @@ class NotificationServiceUTest {
     @InjectMocks
     private NotificationService notificationService;
 
-
     @Test
     void createNotification_happyPath_savesNotification() {
 
@@ -55,7 +54,6 @@ class NotificationServiceUTest {
         assertFalse(savedNotification.isDeleted());
         assertNotNull(savedNotification.getCreatedAt());
     }
-
 
     @Test
     void getUnreadForUser_happyPath_returnsUnreadNotifications() {
@@ -92,7 +90,6 @@ class NotificationServiceUTest {
                 .findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId);
     }
 
-
     @Test
     void getUnreadForUser_noNotifications_returnsEmptyList() {
 
@@ -112,7 +109,6 @@ class NotificationServiceUTest {
                 .findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId);
     }
 
-
     @Test
     void getUnreadCount_happyPath_returnsUnreadCount() {
 
@@ -131,7 +127,6 @@ class NotificationServiceUTest {
                 .countByUserIdAndIsReadFalse(userId);
     }
 
-
     @Test
     void getUnreadCount_noUnreadNotifications_returnsZero() {
 
@@ -149,7 +144,6 @@ class NotificationServiceUTest {
         verify(notificationRepository)
                 .countByUserIdAndIsReadFalse(userId);
     }
-
 
     @Test
     void deleteNotification_happyPath_marksNotificationAsReadAndDeleted() {
@@ -179,7 +173,6 @@ class NotificationServiceUTest {
         verify(notificationRepository).save(notification);
     }
 
-
     @Test
     void deleteNotification_notificationDoesNotExist_throwsException() {
 
@@ -205,7 +198,6 @@ class NotificationServiceUTest {
         verify(notificationRepository).findById(notificationId);
         verify(notificationRepository, never()).save(any(Notification.class));
     }
-
 
     @Test
     void deleteNotification_usernameDoesNotMatch_throwsException() {
@@ -242,7 +234,6 @@ class NotificationServiceUTest {
         assertFalse(notification.isDeleted());
     }
 
-
     @Test
     void getNotificationsForUser_happyPath_returnsNotifications() {
 
@@ -275,7 +266,6 @@ class NotificationServiceUTest {
                 .findByUserIdAndIsDeletedFalseOrderByCreatedAtDesc(userId);
     }
 
-
     @Test
     void getNotificationsForUser_noNotifications_returnsEmptyList() {
 
@@ -294,7 +284,6 @@ class NotificationServiceUTest {
         verify(notificationRepository)
                 .findByUserIdAndIsDeletedFalseOrderByCreatedAtDesc(userId);
     }
-
 
     @Test
     void setReadNotification_happyPath_marksNotificationAsRead() {
@@ -317,7 +306,6 @@ class NotificationServiceUTest {
         verify(notificationRepository).findById(notificationId);
         verify(notificationRepository).save(notification);
     }
-
 
     @Test
     void setReadNotification_notificationDoesNotExist_throwsException() {

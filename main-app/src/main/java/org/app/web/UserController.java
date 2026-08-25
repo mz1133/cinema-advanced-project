@@ -52,10 +52,14 @@ public class UserController {
         Page<Movie> movies = movieService.search(keyword, year, genre, country, sort, pageable);
 
         ModelAndView modelAndView = new ModelAndView("home");
-        modelAndView.addObject("movies", movies);
-        modelAndView.addObject("genres", Genre.values());
-        modelAndView.addObject("releaseYears", ReleaseYear.values());
-        modelAndView.addObject("countries", Country.values());
+        modelAndView.addObject
+                ("movies", movies);
+        modelAndView.addObject
+                ("genres", Genre.values());
+        modelAndView.addObject
+                ("releaseYears", ReleaseYear.values());
+        modelAndView.addObject
+                ("countries", Country.values());
 
         return modelAndView;
     }
@@ -65,15 +69,20 @@ public class UserController {
                                      @PageableDefault(size = 5) Pageable pageable) {
 
         User user = userService.getUserByUsername(principal.getName());
+
         UUID userId = user.getId();
 
         Page<Movie> movies = movieService.getMoviesByPublisher(userId, pageable);
 
-        UpdateProfileRequest updateProfileRequest = userService.getCurrentProfileData(userId);
+        UpdateProfileRequest updateProfileRequest =
+                userService.getCurrentProfileData(userId);
 
         ModelAndView modelAndView = new ModelAndView("my-profile");
-        modelAndView.addObject("updateProfileRequest", updateProfileRequest);
-        modelAndView.addObject("movies", movies);
+
+        modelAndView.addObject
+                ("updateProfileRequest", updateProfileRequest);
+        modelAndView.addObject
+                ("movies", movies);
 
         return modelAndView;
     }
@@ -84,8 +93,8 @@ public class UserController {
                                         BindingResult bindingResult,
                                         RedirectAttributes redirectAttributes) {
 
-
         if (bindingResult.hasErrors()) {
+
             return new ModelAndView("my-profile");
         }
 
@@ -114,9 +123,14 @@ public class UserController {
                                      RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
+
             ModelAndView modelAndView = new ModelAndView("subscriptions");
-            modelAndView.addObject("plans", subscriptionProperties.getPlans());
-            modelAndView.addObject("hasErrors", true);
+
+            modelAndView.addObject
+                    ("plans", subscriptionProperties.getPlans());
+            modelAndView.addObject
+                    ("hasErrors", true);
+
             return modelAndView;
         }
 
@@ -128,10 +142,6 @@ public class UserController {
     }
 
 
-    @GetMapping("/my-reviews")
-    public String getMyReviews() {
-        return "my-reviews";
-    }
 
 
 }

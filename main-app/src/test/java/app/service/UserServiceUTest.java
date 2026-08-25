@@ -75,9 +75,6 @@ class UserServiceUTest {
                 .build();
     }
 
-
-
-
     @Test
     void register_validRequest_createsUserAndNotification() {
 
@@ -131,7 +128,6 @@ class UserServiceUTest {
         );
     }
 
-
     @Test
     void register_passwordsDoNotMatch_throwsValidationFailedException() {
 
@@ -159,7 +155,6 @@ class UserServiceUTest {
         verify(notificationService, never())
                 .createNotification(any(), anyString(), anyString());
     }
-
 
     @Test
     void register_usernameAlreadyExists_throwsValidationFailedException() {
@@ -222,7 +217,6 @@ class UserServiceUTest {
         verify(userRepository, never()).save(any(User.class));
     }
 
-
     @Test
     void register_emailAlreadyExists_throwsValidationFailedException() {
 
@@ -250,9 +244,6 @@ class UserServiceUTest {
         verify(notificationService, never())
                 .createNotification(any(), anyString(), anyString());
     }
-
-
-
 
     @Test
     void updateUserProfile_validRequest_updatesUser() {
@@ -287,7 +278,6 @@ class UserServiceUTest {
         verify(userRepository).save(user);
     }
 
-
     @Test
     void updateUserProfile_userNotFound_throwsException() {
 
@@ -307,9 +297,6 @@ class UserServiceUTest {
         verify(userRepository, never()).save(any());
     }
 
-
-
-
     @Test
     void getUserById_userExists_returnsUser() {
 
@@ -325,7 +312,6 @@ class UserServiceUTest {
         verify(userRepository).findById(id);
     }
 
-
     @Test
     void getUserById_userDoesNotExist_throwsException() {
 
@@ -339,9 +325,6 @@ class UserServiceUTest {
                 () -> userService.getUserById(id)
         );
     }
-
-
-
 
     @Test
     void isCanAddMovie_admin_returnsTrue() {
@@ -357,7 +340,6 @@ class UserServiceUTest {
         assertTrue(result);
     }
 
-
     @Test
     void isCanAddMovie_superAdmin_returnsTrue() {
 
@@ -371,7 +353,6 @@ class UserServiceUTest {
 
         assertTrue(result);
     }
-
 
     @Test
     void isCanAddMovie_userWithoutSubscription_returnsFalse() {
@@ -387,7 +368,6 @@ class UserServiceUTest {
 
         assertFalse(result);
     }
-
 
     @Test
     void isCanAddMovie_userWithActiveSubscription_returnsTrue() {
@@ -409,7 +389,6 @@ class UserServiceUTest {
         assertTrue(result);
     }
 
-
     @Test
     void isCanAddMovie_userWithExpiredSubscription_returnsFalse() {
 
@@ -429,9 +408,6 @@ class UserServiceUTest {
 
         assertFalse(result);
     }
-
-
-
 
     @Test
     void getAllUsersPageable_returnsUsersFromRepository() {
@@ -458,9 +434,6 @@ class UserServiceUTest {
         verify(userRepository)
                 .findAllByIdNot(pageable, currentUserId);
     }
-
-
-
 
     @Test
     void getUserByKeyWord_validUUID_usesIdSearch() {
@@ -503,7 +476,6 @@ class UserServiceUTest {
                 );
     }
 
-
     @Test
     void getUserByKeyWord_invalidUUID_usesUsernameSearch() {
 
@@ -536,9 +508,6 @@ class UserServiceUTest {
                         currentUserId
                 );
     }
-
-
-
 
     @Test
     void changeUserRole_adminChangesUserToUser_successfully() {
@@ -574,7 +543,6 @@ class UserServiceUTest {
         verify(userRepository).save(userToChange);
     }
 
-
     @Test
     void changeUserRole_userCannotChangeRole_throwsException() {
 
@@ -608,7 +576,6 @@ class UserServiceUTest {
 
         verify(userRepository, never()).save(any());
     }
-
 
     @Test
     void changeUserRole_adminCannotPromoteUserToAdmin_throwsException() {
@@ -644,7 +611,6 @@ class UserServiceUTest {
         verify(userRepository, never()).save(any());
     }
 
-
     @Test
     void changeUserRole_cannotAssignSuperAdmin_throwsException() {
 
@@ -678,7 +644,6 @@ class UserServiceUTest {
 
         verify(userRepository, never()).save(any());
     }
-
 
     @Test
     void changeUserRole_cannotChangeSuperAdmin_throwsException() {
@@ -714,9 +679,6 @@ class UserServiceUTest {
         verify(userRepository, never()).save(any());
     }
 
-
-
-
     @Test
     void changeUserActivationStatus_adminDeactivatesUser() {
 
@@ -750,7 +712,6 @@ class UserServiceUTest {
         verify(userRepository).save(target);
     }
 
-
     @Test
     void changeUserActivationStatus_adminActivatesUser() {
 
@@ -783,7 +744,6 @@ class UserServiceUTest {
 
         verify(userRepository).save(target);
     }
-
 
     @Test
     void changeUserActivationStatus_normalUserCannotChangeStatus() {
@@ -819,7 +779,6 @@ class UserServiceUTest {
         verify(userRepository, never()).save(any());
     }
 
-
     @Test
     void changeUserActivationStatus_adminCannotChangeSuperAdmin() {
 
@@ -853,7 +812,6 @@ class UserServiceUTest {
 
         verify(userRepository, never()).save(any());
     }
-
 
     @Test
     void changeUserActivationStatus_adminCannotChangeAnotherAdmin() {
@@ -889,9 +847,6 @@ class UserServiceUTest {
         verify(userRepository, never()).save(any());
     }
 
-
-
-
     @Test
     void getCurrentProfileData_userExists_returnsCorrectData() {
 
@@ -909,7 +864,6 @@ class UserServiceUTest {
         assertEquals(user.getPictureUrl(), result.getPictureUrl());
     }
 
-
     @Test
     void getCurrentProfileData_userDoesNotExist_throwsException() {
 
@@ -924,9 +878,6 @@ class UserServiceUTest {
         );
     }
 
-
-
-
     @Test
     void getUserByUsername_userExists_returnsUser() {
 
@@ -939,7 +890,6 @@ class UserServiceUTest {
         assertSame(user, result);
     }
 
-
     @Test
     void getUserByUsername_userDoesNotExist_throwsException() {
 
@@ -951,9 +901,6 @@ class UserServiceUTest {
                 () -> userService.getUserByUsername("john123")
         );
     }
-
-
-
 
     @Test
     void getUserByUsernameOrEmail_userExists_returnsUser() {
@@ -969,7 +916,6 @@ class UserServiceUTest {
         assertSame(user, result);
     }
 
-
     @Test
     void getUserByUsernameOrEmail_userDoesNotExist_throwsException() {
 
@@ -983,9 +929,6 @@ class UserServiceUTest {
                 () -> userService.getUserByUsernameOrEmail("unknown")
         );
     }
-
-
-
 
     @Test
     void loadUserByUsername_userExists_returnsAuthenticationMetadata() {
@@ -1007,7 +950,6 @@ class UserServiceUTest {
         assertEquals("encodedPassword", result.getPassword());
     }
 
-
     @Test
     void loadUserByUsername_userDoesNotExist_throwsException() {
 
@@ -1022,9 +964,6 @@ class UserServiceUTest {
         );
     }
 
-
-
-
     @Test
     void isAdmin_admin_returnsTrue() {
 
@@ -1032,7 +971,6 @@ class UserServiceUTest {
 
         assertTrue(userService.isAdmin(user));
     }
-
 
     @Test
     void isAdmin_superAdmin_returnsTrue() {
@@ -1042,7 +980,6 @@ class UserServiceUTest {
         assertTrue(userService.isAdmin(user));
     }
 
-
     @Test
     void isAdmin_normalUser_returnsFalse() {
 
@@ -1050,9 +987,6 @@ class UserServiceUTest {
 
         assertFalse(userService.isAdmin(user));
     }
-
-
-
 
     @Test
     void isCanAddReviewAndComment_withoutSubscription_returnsFalse() {
@@ -1066,7 +1000,6 @@ class UserServiceUTest {
                 userService.isCanAddReviewAndComment(user.getId())
         );
     }
-
 
     @Test
     void isCanAddReviewAndComment_withValidSubscription_returnsTrue() {
@@ -1086,7 +1019,6 @@ class UserServiceUTest {
         );
     }
 
-
     @Test
     void isCanAddReviewAndComment_withExpiredSubscription_returnsFalse() {
 
@@ -1104,9 +1036,6 @@ class UserServiceUTest {
                 userService.isCanAddReviewAndComment(user.getId())
         );
     }
-
-
-
 
     @Test
     void getUserHeaderDto_userExists_returnsCorrectDto() {
@@ -1136,7 +1065,6 @@ class UserServiceUTest {
         assertTrue(result.isCanAddReviewAndComment());
     }
 
-
     @Test
     void getUserHeaderDto_userDoesNotExist_throwsException() {
 
@@ -1150,9 +1078,6 @@ class UserServiceUTest {
                 () -> userService.getUserHeaderDto(id)
         );
     }
-
-
-
 
     @Test
     void getUsersBySubscriptionExpirationDate_returnsUsers() {

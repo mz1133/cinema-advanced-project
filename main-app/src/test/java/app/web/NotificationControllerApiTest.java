@@ -70,6 +70,7 @@ public class NotificationControllerApiTest {
         verify(userService, atLeastOnce()).getUserByUsernameOrEmail("testUser");
         verify(notificationService, times(1)).getNotificationsForUser(userId);
     }
+
     @Test
     void markAsReadNotification_shouldRedirectToNotifications() throws Exception {
         UUID notifId = UUID.randomUUID();

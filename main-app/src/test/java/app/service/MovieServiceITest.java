@@ -48,7 +48,6 @@ class MovieServiceITest {
     @Autowired
     private UserRepository userRepository;
 
-
     @BeforeEach
     void setUp() {
         movieRepository.deleteAll();
@@ -59,7 +58,6 @@ class MovieServiceITest {
         actorRepository.flush();
         userRepository.flush();
     }
-
 
     @Test
     void addMovie_shouldSaveMovieToDatabase() {
@@ -134,7 +132,6 @@ class MovieServiceITest {
         );
     }
 
-
     @Test
     void addMovie_whenAdmin_shouldSetPostedByToCineCatalog() {
 
@@ -183,7 +180,6 @@ class MovieServiceITest {
         );
     }
 
-
     @Test
     void getMovieById_shouldReturnMovie() {
 
@@ -215,7 +211,6 @@ class MovieServiceITest {
         );
     }
 
-
     @Test
     void getMovieById_whenMovieDoesNotExist_shouldThrowException() {
 
@@ -229,7 +224,6 @@ class MovieServiceITest {
                 )
         );
     }
-
 
     @Test
     void getAllMoviesPageable_shouldReturnMovies() {
@@ -253,7 +247,6 @@ class MovieServiceITest {
                 result.getContent().size()
         );
     }
-
 
     @Test
     void getMovieByKeyword_whenSearchTypeIsId_shouldFindMovie() {
@@ -281,7 +274,6 @@ class MovieServiceITest {
         );
     }
 
-
     @Test
     void getMovieByKeyword_whenInvalidId_shouldReturnEmptyPage() {
 
@@ -294,7 +286,6 @@ class MovieServiceITest {
 
         assertTrue(result.isEmpty());
     }
-
 
     @Test
     void search_shouldFilterByYear() {
@@ -334,7 +325,6 @@ class MovieServiceITest {
         );
     }
 
-
     @Test
     void search_shouldFilterByGenre() {
 
@@ -371,7 +361,6 @@ class MovieServiceITest {
                 result.getContent().get(0).getId()
         );
     }
-
 
     @Test
     void search_shouldFilterByCountry() {
@@ -410,7 +399,6 @@ class MovieServiceITest {
         );
     }
 
-
     @Test
     void search_shouldReturnOnlyNotDeletedMovies() {
 
@@ -447,7 +435,6 @@ class MovieServiceITest {
                 result.getContent().get(0).getId()
         );
     }
-
 
     @Test
     void getMoviesByPublisher_shouldReturnOnlyPublisherMovies() {
@@ -519,7 +506,6 @@ class MovieServiceITest {
                         )
         );
     }
-
 
     @Test
     void getMovieEditDetails_shouldReturnMovieData() {
@@ -612,7 +598,6 @@ class MovieServiceITest {
         );
     }
 
-
     @Test
     void getMovieOptions_shouldReturnGenresCountriesAndActors() {
 
@@ -664,7 +649,6 @@ class MovieServiceITest {
         );
     }
 
-
     private Actor createActor(
             String firstName,
             String lastName
@@ -684,7 +668,6 @@ class MovieServiceITest {
 
         return actorRepository.save(actor);
     }
-
 
     private User createUser(
             String username,
@@ -706,7 +689,6 @@ class MovieServiceITest {
         return userRepository.save(user);
     }
 
-
     private Movie createMovie(
             String title,
             Integer year
@@ -723,7 +705,6 @@ class MovieServiceITest {
                 )
         );
     }
-
 
     private Movie createMovie(
             String title,
@@ -749,7 +730,6 @@ class MovieServiceITest {
 
         return movieRepository.save(movie);
     }
-
 
     private Movie createMovieWithPublisher(
             String title,

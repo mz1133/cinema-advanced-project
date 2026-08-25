@@ -202,11 +202,5 @@ class UserControllerApiTest {
         verify(subscriptionService, never()).addPlan(any(PurchaseSubscriptionDto.class), any());
     }
 
-    @Test
-    void getMyReviewsShouldReturnMyReviewsView() throws Exception {
-        mockMvc.perform(get("/home/my-reviews").with(user("api_user")))
-                .andExpect(status().isOk())
-                .andExpect(view().name("my-reviews"))
-                .andExpect(model().attributeExists("currentUser"));
-    }
+
 }

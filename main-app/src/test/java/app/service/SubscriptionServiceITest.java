@@ -2,10 +2,7 @@ package app.service;
 
 import org.app.Application;
 import org.app.config.SubscriptionProperties;
-import org.app.exception.CardValidationException;
-import org.app.exception.UserAlreadyHasSubscriptionException;
-import org.app.exception.UserNotFoundException;
-import org.app.subscription.model.Subscription;
+
 import org.app.subscription.repository.SubscriptionRepository;
 import org.app.subscription.service.SubscriptionService;
 import org.app.user.model.Role;

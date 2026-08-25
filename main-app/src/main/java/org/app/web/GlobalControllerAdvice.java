@@ -39,6 +39,7 @@ public class GlobalControllerAdvice {
     public String handleException(Exception e, RedirectAttributes redirectAttributes, HttpServletResponse response) {
 
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
         redirectAttributes.addFlashAttribute("errorStatusCode", response.getStatus());
 
         return "redirect:/error";

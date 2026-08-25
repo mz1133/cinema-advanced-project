@@ -1,4 +1,4 @@
-package org.app.web;
+package app.web;
 
 import org.app.Application;
 import org.app.actor.service.ActorService;
@@ -9,6 +9,7 @@ import org.app.reviewclient.ReviewClient;
 import org.app.user.model.Role;
 import org.app.user.model.User;
 import org.app.user.service.UserService;
+import org.app.web.MovieController;
 import org.app.web.dto.CustomPageDto;
 import org.app.web.dto.EditMovieDetails;
 import org.app.web.dto.MovieOptionsDto;
